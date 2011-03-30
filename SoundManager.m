@@ -11,7 +11,6 @@
 
 #ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
 #import <AVFoundation/AVFoundation.h>
-#import <AudioToolbox/AudioToolbox.h>
 @interface Sound() <AVAudioPlayerDelegate>
 #else
 #import <AppKit/AppKit.h>
@@ -220,10 +219,9 @@ static SoundManager *sharedManager = nil;
 
 #ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
         
-            //configure audio session
-            allowsBackgroundMusic = allow;
-            UInt32 sessionCategory = allow? kAudioSessionCategory_AmbientSound: kAudioSessionCategory_SoloAmbientSound;
-            AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(sessionCategory), &sessionCategory);
+        allowsBackgroundMusic = allow;
+        AVAudioSession *session = [AVAudioSession sharedInstance];
+        [session setCategory:allow? AVAudioSessionCategoryAmbient: AVAudioSessionCategorySoloAmbient error:NULL];
 #endif
         
     }
