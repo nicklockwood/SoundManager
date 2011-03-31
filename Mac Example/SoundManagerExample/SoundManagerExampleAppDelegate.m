@@ -59,4 +59,14 @@
     [[SoundManager sharedManager] playSound:@"sound2"];
 }
 
+- (IBAction)setSoundVolume:(NSSlider *)sender
+{
+    [SoundManager sharedManager].soundVolume = [sender floatValue]/100.0;
+}
+
+- (IBAction)setMusicVolume:(NSSlider *)sender
+{
+    [SoundManager sharedManager].musicVolume = [sender floatValue]/100.0;
+}
+
 @end

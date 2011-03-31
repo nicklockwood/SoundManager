@@ -66,6 +66,16 @@
     [[SoundManager sharedManager] playSound:@"sound2"];
 }
 
+- (IBAction)setSoundVolume:(UISlider *)sender
+{
+    [SoundManager sharedManager].soundVolume = sender.value;
+}
+
+- (IBAction)setMusicVolume:(UISlider *)sender
+{
+    [SoundManager sharedManager].musicVolume = sender.value;
+}
+
 - (void)dealloc
 {
     [switchTrackButton release];

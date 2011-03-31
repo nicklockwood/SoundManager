@@ -9,6 +9,10 @@
 #import "SoundManager.h"
 
 
+#pragma mark -
+#pragma Sound class
+
+
 #ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
 #import <AVFoundation/AVFoundation.h>
 @interface Sound() <AVAudioPlayerDelegate>
@@ -24,6 +28,9 @@
 @property (nonatomic, retain) Sound *selfReference;
 
 @end
+
+
+NSString * const SoundFinishedPlayingNotification = @"SoundFinishedPlayingNotification";
 
 
 @implementation Sound
@@ -74,12 +81,26 @@
 
 - (float)volume
 {
-    return [sound volume];
+    if (timer)
+    {
+        return targetVolume;
+    }
+    else
+    {
+        return [sound volume];
+    }
 }
 
 - (void)setVolume:(float)volume
 {
-    [sound setVolume:volume];
+    if (timer)
+    {
+        targetVolume = volume;
+    }
+    else
+    {
+        [sound setVolume:volume];
+    }
 }
 
 - (BOOL)playing
@@ -124,12 +145,13 @@
 #endif
 {
     [self stop];
+    [[NSNotificationCenter defaultCenter] postNotificationName:SoundFinishedPlayingNotification object:self];
 }
 
 - (void)fadeTo:(float)volume duration:(NSTimeInterval)duration
 {
 	targetVolume = volume;
-	volumeDelta = (volume - self.volume) / duration;
+	volumeDelta = (volume - [sound volume]) / duration;
 	if (timer == nil)
 	{
 		lastTick = [[NSDate date] timeIntervalSinceReferenceDate];
@@ -143,7 +165,7 @@
 
 - (void)fadeIn:(NSTimeInterval)duration
 {
-	self.volume = 0.0;
+	[sound setVolume:0.0];
     [self fadeTo:1.0 duration:duration];
 }
 
@@ -156,20 +178,15 @@
 {
 	NSTimeInterval now = [[NSDate date] timeIntervalSinceReferenceDate];
 	float delta = (now - lastTick);
-	self.volume += delta * volumeDelta;
-	if (volumeDelta > 0 && self.volume >= targetVolume)
+	[sound setVolume:delta * volumeDelta];
+	if ((volumeDelta > 0 && [sound volume] >= targetVolume) ||
+        (volumeDelta < 0 && [sound volume] <= targetVolume))
 	{
-		self.volume = targetVolume;
+		[sound setVolume:targetVolume];
 		[timer invalidate];
 		self.timer = nil;
 	}
-	else if (volumeDelta < 0 && self.volume <= targetVolume)
-	{
-		self.volume = targetVolume;
-		[timer invalidate];
-		self.timer = nil;
-	}
-    if (self.volume == 0)
+    if ([sound volume] == 0)
     {
         [self stop];
     }
@@ -177,7 +194,7 @@
 
 - (void)dealloc
 {
-	[timer invalidate];
+    [timer invalidate];
 	[timer release];
     [url release];
     [sound release];
@@ -187,12 +204,17 @@
 @end
 
 
+#pragma mark -
+#pragma SoundManager class
+
+
 static SoundManager *sharedManager = nil;
 
 
 @interface SoundManager ()
 
 @property (nonatomic, retain) Sound *currentMusic;
+@property (nonatomic, retain) NSMutableArray *currentSounds;
 
 @end
 
@@ -200,7 +222,10 @@ static SoundManager *sharedManager = nil;
 @implementation SoundManager
 
 @synthesize currentMusic;
+@synthesize currentSounds;
 @synthesize allowsBackgroundMusic;
+@synthesize soundVolume;
+@synthesize musicVolume;
 
 
 + (SoundManager *)sharedManager
@@ -210,6 +235,17 @@ static SoundManager *sharedManager = nil;
 		sharedManager = [[self alloc] init];
 	}
 	return sharedManager;
+}
+
+- (SoundManager *)init
+{
+    if ((self = [super init]))
+    {
+        soundVolume = 1.0;
+        musicVolume = 1.0;
+        currentSounds = [[NSMutableArray alloc] init];
+    }
+    return self;
 }
 
 - (void)setAllowsBackgroundMusic:(BOOL)allow
@@ -233,6 +269,7 @@ static SoundManager *sharedManager = nil;
 #ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
     
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    [AVAudioSession sharedInstance];
     NSArray *extensions = [NSArray arrayWithObjects:@"caf", @"m4a", @"mp4", @"mp3", @"wav", @"aif", nil];
     NSArray *paths = nil;
     for (NSString *extension in extensions)
@@ -263,9 +300,13 @@ static SoundManager *sharedManager = nil;
 			[currentMusic fadeOut:CROSSFADE_DURATION];
 		}
 		self.currentMusic = music;
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(musicFinished:)
+                                                     name:SoundFinishedPlayingNotification
+                                                   object:music];
 		currentMusic.volume = 0.0;
         [currentMusic play:YES];
-        [currentMusic fadeTo:MUSIC_VOLUME duration:CROSSFADE_DURATION];
+        [currentMusic fadeTo:musicVolume duration:CROSSFADE_DURATION];
 	}
 }
 
@@ -278,7 +319,12 @@ static SoundManager *sharedManager = nil;
 - (void)playSound:(NSString *)name
 {
     Sound *sound = [Sound soundWithName:name];
-    sound.volume = SOUND_VOLUME;
+    [currentSounds addObject:sound];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(soundFinished:)
+                                                 name:SoundFinishedPlayingNotification
+                                               object:sound];
+    sound.volume = soundVolume;
     [sound play:NO];
 }
 
@@ -287,8 +333,37 @@ static SoundManager *sharedManager = nil;
     return currentMusic != nil;
 }
 
+- (void)setSoundVolume:(float)newVolume
+{
+    soundVolume = newVolume;
+    for (Sound *sound in currentSounds)
+    {
+        sound.volume = soundVolume;
+    }
+}
+
+- (void)setMusicVolume:(float)newVolume
+{
+    musicVolume = newVolume;
+    currentMusic.volume = musicVolume;
+}
+
+- (void)soundFinished:(NSNotification *)notification
+{
+    [currentSounds removeObject:[notification object]];
+}
+
+- (void)musicFinished:(NSNotification *)notification
+{
+    if ([notification object] == currentMusic)
+    {
+        self.currentMusic = nil;
+    }
+}
+
 - (void)dealloc
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 	[currentMusic release];
 	[super dealloc];
 }

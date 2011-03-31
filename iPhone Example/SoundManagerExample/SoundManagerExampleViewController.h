@@ -19,5 +19,7 @@
 - (IBAction)switchTrack:(UIButton *)sender;
 - (IBAction)playSound1:(UIButton *)sender;
 - (IBAction)playSound2:(UIButton *)sender;
+- (IBAction)setSoundVolume:(UISlider *)sender;
+- (IBAction)setMusicVolume:(UISlider *)sender;
 
 @end

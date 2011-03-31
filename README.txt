@@ -17,8 +17,6 @@ The SoundManager class has the following configuration constants:
 
 FILE_EXTENSION - the default file extension for sounds when not specified.
 CROSSFADE_DURATION - the crossfade duration between music tracks.
-MUSIC_VOLUME - the volume at which to play music tracks.
-SOUND_VOLUME - the volume at which to play sounds.
 
 
 Properties
@@ -31,6 +29,14 @@ This readonly property reports if the SoundManager is currently playing music.
 @property (nonatomic, assign) BOOL allowsBackgroundMusic;
 
 This property is used to control the audio session on the iPhone to allow iPod music to be played in the background. It defaults to NO, so it should be set to YES before you attempt to play any sound or music if you do not want the iPod music to be interrupted. It does nothing on Mac OS currently.
+
+@property (nonatomic, assign) float soundVolume;
+
+Sets the sound volume. Affects all currently playing sounds as well as any sounds played subsequently. Should be in the range 0 - 1.
+
+@property (nonatomic, assign) float musicVolume;
+
+Sets the music volume. Affects currently playing music track as well as any music tracks played subsequently. Should be in the range 0 - 1.
 
 
 Methods

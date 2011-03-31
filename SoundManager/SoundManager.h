@@ -11,8 +11,9 @@
 
 #define FILE_EXTENSION @"caf"
 #define CROSSFADE_DURATION 3.0
-#define MUSIC_VOLUME 0.5
-#define SOUND_VOLUME 1.0
+
+
+extern NSString * const SoundFinishedPlayingNotification;
 
 
 @interface Sound : NSObject
@@ -47,11 +48,16 @@
 @interface SoundManager : NSObject
 {    
     Sound *currentMusic;
+    NSMutableArray *currentSounds;
     BOOL allowsBackgroundMusic;
+    float soundVolume;
+    float musicVolume;
 }
 
 @property (nonatomic, readonly) BOOL playingMusic;
 @property (nonatomic, assign) BOOL allowsBackgroundMusic;
+@property (nonatomic, assign) float soundVolume;
+@property (nonatomic, assign) float musicVolume;
 
 + (SoundManager *)sharedManager;
 
