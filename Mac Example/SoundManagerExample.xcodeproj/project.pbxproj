@@ -1,0 +1,326 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B2147EF81344827400C8FB9B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2147EF71344827400C8FB9B /* Cocoa.framework */; };
+		B2147F021344827400C8FB9B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B2147F001344827400C8FB9B /* InfoPlist.strings */; };
+		B2147F051344827400C8FB9B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B2147F041344827400C8FB9B /* main.m */; };
+		B2147F081344827400C8FB9B /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = B2147F061344827400C8FB9B /* Credits.rtf */; };
+		B2147F0B1344827400C8FB9B /* SoundManagerExampleAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B2147F0A1344827400C8FB9B /* SoundManagerExampleAppDelegate.m */; };
+		B2147F0E1344827400C8FB9B /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = B2147F0C1344827400C8FB9B /* MainMenu.xib */; };
+		B2147F24134483F600C8FB9B /* sound1.caf in Resources */ = {isa = PBXBuildFile; fileRef = B2147F1D134483F600C8FB9B /* sound1.caf */; };
+		B2147F25134483F600C8FB9B /* sound2.caf in Resources */ = {isa = PBXBuildFile; fileRef = B2147F1E134483F600C8FB9B /* sound2.caf */; };
+		B2147F26134483F600C8FB9B /* track1.caf in Resources */ = {isa = PBXBuildFile; fileRef = B2147F1F134483F600C8FB9B /* track1.caf */; };
+		B2147F27134483F600C8FB9B /* track2.caf in Resources */ = {isa = PBXBuildFile; fileRef = B2147F20134483F600C8FB9B /* track2.caf */; };
+		B2147F28134483F600C8FB9B /* SoundManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B2147F23134483F600C8FB9B /* SoundManager.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		B2147EF31344827400C8FB9B /* SoundManagerExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SoundManagerExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B2147EF71344827400C8FB9B /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		B2147EFA1344827400C8FB9B /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		B2147EFB1344827400C8FB9B /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		B2147EFC1344827400C8FB9B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		B2147EFF1344827400C8FB9B /* SoundManagerExample-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "SoundManagerExample-Info.plist"; sourceTree = "<group>"; };
+		B2147F011344827400C8FB9B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		B2147F031344827400C8FB9B /* SoundManagerExample-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SoundManagerExample-Prefix.pch"; sourceTree = "<group>"; };
+		B2147F041344827400C8FB9B /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		B2147F071344827400C8FB9B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
+		B2147F091344827400C8FB9B /* SoundManagerExampleAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SoundManagerExampleAppDelegate.h; sourceTree = "<group>"; };
+		B2147F0A1344827400C8FB9B /* SoundManagerExampleAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SoundManagerExampleAppDelegate.m; sourceTree = "<group>"; };
+		B2147F0D1344827400C8FB9B /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		B2147F1D134483F600C8FB9B /* sound1.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = sound1.caf; sourceTree = "<group>"; };
+		B2147F1E134483F600C8FB9B /* sound2.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = sound2.caf; sourceTree = "<group>"; };
+		B2147F1F134483F600C8FB9B /* track1.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = track1.caf; sourceTree = "<group>"; };
+		B2147F20134483F600C8FB9B /* track2.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = track2.caf; sourceTree = "<group>"; };
+		B2147F22134483F600C8FB9B /* SoundManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundManager.h; sourceTree = "<group>"; };
+		B2147F23134483F600C8FB9B /* SoundManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SoundManager.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B2147EF01344827400C8FB9B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B2147EF81344827400C8FB9B /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		B2147EE81344827300C8FB9B = {
+			isa = PBXGroup;
+			children = (
+				B2147F1C134483F600C8FB9B /* Sounds */,
+				B2147F21134483F600C8FB9B /* SoundManager */,
+				B2147EFD1344827400C8FB9B /* SoundManagerExample */,
+				B2147EF61344827400C8FB9B /* Frameworks */,
+				B2147EF41344827400C8FB9B /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		B2147EF41344827400C8FB9B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B2147EF31344827400C8FB9B /* SoundManagerExample.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B2147EF61344827400C8FB9B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B2147EF71344827400C8FB9B /* Cocoa.framework */,
+				B2147EF91344827400C8FB9B /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B2147EF91344827400C8FB9B /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B2147EFA1344827400C8FB9B /* AppKit.framework */,
+				B2147EFB1344827400C8FB9B /* CoreData.framework */,
+				B2147EFC1344827400C8FB9B /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		B2147EFD1344827400C8FB9B /* SoundManagerExample */ = {
+			isa = PBXGroup;
+			children = (
+				B2147F091344827400C8FB9B /* SoundManagerExampleAppDelegate.h */,
+				B2147F0A1344827400C8FB9B /* SoundManagerExampleAppDelegate.m */,
+				B2147F0C1344827400C8FB9B /* MainMenu.xib */,
+				B2147EFE1344827400C8FB9B /* Supporting Files */,
+			);
+			path = SoundManagerExample;
+			sourceTree = "<group>";
+		};
+		B2147EFE1344827400C8FB9B /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				B2147EFF1344827400C8FB9B /* SoundManagerExample-Info.plist */,
+				B2147F001344827400C8FB9B /* InfoPlist.strings */,
+				B2147F031344827400C8FB9B /* SoundManagerExample-Prefix.pch */,
+				B2147F041344827400C8FB9B /* main.m */,
+				B2147F061344827400C8FB9B /* Credits.rtf */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		B2147F1C134483F600C8FB9B /* Sounds */ = {
+			isa = PBXGroup;
+			children = (
+				B2147F1D134483F600C8FB9B /* sound1.caf */,
+				B2147F1E134483F600C8FB9B /* sound2.caf */,
+				B2147F1F134483F600C8FB9B /* track1.caf */,
+				B2147F20134483F600C8FB9B /* track2.caf */,
+			);
+			name = Sounds;
+			path = ../Sounds;
+			sourceTree = "<group>";
+		};
+		B2147F21134483F600C8FB9B /* SoundManager */ = {
+			isa = PBXGroup;
+			children = (
+				B2147F22134483F600C8FB9B /* SoundManager.h */,
+				B2147F23134483F600C8FB9B /* SoundManager.m */,
+			);
+			name = SoundManager;
+			path = ../SoundManager;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		B2147EF21344827400C8FB9B /* SoundManagerExample */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B2147F111344827400C8FB9B /* Build configuration list for PBXNativeTarget "SoundManagerExample" */;
+			buildPhases = (
+				B2147EEF1344827400C8FB9B /* Sources */,
+				B2147EF01344827400C8FB9B /* Frameworks */,
+				B2147EF11344827400C8FB9B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SoundManagerExample;
+			productName = SoundManagerExample;
+			productReference = B2147EF31344827400C8FB9B /* SoundManagerExample.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B2147EEA1344827300C8FB9B /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = B2147EED1344827300C8FB9B /* Build configuration list for PBXProject "SoundManagerExample" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = B2147EE81344827300C8FB9B;
+			productRefGroup = B2147EF41344827400C8FB9B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B2147EF21344827400C8FB9B /* SoundManagerExample */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		B2147EF11344827400C8FB9B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B2147F021344827400C8FB9B /* InfoPlist.strings in Resources */,
+				B2147F081344827400C8FB9B /* Credits.rtf in Resources */,
+				B2147F0E1344827400C8FB9B /* MainMenu.xib in Resources */,
+				B2147F24134483F600C8FB9B /* sound1.caf in Resources */,
+				B2147F25134483F600C8FB9B /* sound2.caf in Resources */,
+				B2147F26134483F600C8FB9B /* track1.caf in Resources */,
+				B2147F27134483F600C8FB9B /* track2.caf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B2147EEF1344827400C8FB9B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B2147F051344827400C8FB9B /* main.m in Sources */,
+				B2147F0B1344827400C8FB9B /* SoundManagerExampleAppDelegate.m in Sources */,
+				B2147F28134483F600C8FB9B /* SoundManager.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		B2147F001344827400C8FB9B /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B2147F011344827400C8FB9B /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		B2147F061344827400C8FB9B /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B2147F071344827400C8FB9B /* en */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+		B2147F0C1344827400C8FB9B /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B2147F0D1344827400C8FB9B /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		B2147F0F1344827400C8FB9B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		B2147F101344827400C8FB9B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		B2147F121344827400C8FB9B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "SoundManagerExample/SoundManagerExample-Prefix.pch";
+				INFOPLIST_FILE = "SoundManagerExample/SoundManagerExample-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		B2147F131344827400C8FB9B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "SoundManagerExample/SoundManagerExample-Prefix.pch";
+				INFOPLIST_FILE = "SoundManagerExample/SoundManagerExample-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B2147EED1344827300C8FB9B /* Build configuration list for PBXProject "SoundManagerExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B2147F0F1344827400C8FB9B /* Debug */,
+				B2147F101344827400C8FB9B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B2147F111344827400C8FB9B /* Build configuration list for PBXNativeTarget "SoundManagerExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B2147F121344827400C8FB9B /* Debug */,
+				B2147F131344827400C8FB9B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B2147EEA1344827300C8FB9B /* Project object */;
+}
