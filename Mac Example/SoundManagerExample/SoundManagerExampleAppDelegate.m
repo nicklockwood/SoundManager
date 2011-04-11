@@ -14,15 +14,20 @@
 @synthesize switchTrackButton;
 @synthesize trackIndex;
 
+- (void)applicationDidFinishLaunching:(NSNotification *)notification
+{
+    [[SoundManager sharedManager] prepareToPlay];
+}
+
 - (void)playMusic
 {
     if (trackIndex == 0)
     {
-        [[SoundManager sharedManager] playMusic:@"track1"];
+        [[SoundManager sharedManager] playMusic:@"track1" looping:YES];
     }
     else
     {
-        [[SoundManager sharedManager] playMusic:@"track2"];
+        [[SoundManager sharedManager] playMusic:@"track2" looping:YES];
     }
 }
 
@@ -51,12 +56,12 @@
 
 - (IBAction)playSound1:(NSButton *)sender
 {
-    [[SoundManager sharedManager] playSound:@"sound1"];
+    [[SoundManager sharedManager] playSound:@"sound1" looping:NO];
 }
 
 - (IBAction)playSound2:(NSButton *)sender
 {
-    [[SoundManager sharedManager] playSound:@"sound2"];
+    [[SoundManager sharedManager] playSound:@"sound2" looping:NO];
 }
 
 - (IBAction)setSoundVolume:(NSSlider *)sender
