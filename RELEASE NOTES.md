@@ -1,3 +1,9 @@
+Version 1.1.2
+
+- Fixed occasional crash due to accessing sound after it is released
+- Sound manager will now log a warning to the console when passed a non-existent sound file instead of crashing
+- Sound names can now include directory separators. This means that sounds in subfolders of the resource folder can be played using the standard play functions.
+
 Version 1.1.1
 
 - Fixed bugs with music fading

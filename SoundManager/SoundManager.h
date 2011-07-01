@@ -1,7 +1,7 @@
 //
 //  SoundManager.h
 //
-//  Version 1.1.1
+//  Version 1.1.2
 //
 //  Created by Nick Lockwood on 29/01/2011.
 //  Copyright 2010 Charcoal Design. All rights reserved.

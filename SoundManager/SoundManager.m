@@ -1,7 +1,7 @@
 //
 //  SoundManager.m
 //
-//  Version 1.1.1
+//  Version 1.1.2
 //
 //  Created by Nick Lockwood on 29/01/2011.
 //  Copyright 2010 Charcoal Design. All rights reserved.
@@ -88,8 +88,19 @@ NSString * const SoundFinishedPlayingNotification = @"SoundFinishedPlayingNotifi
     {
         _name = [_name stringByAppendingPathExtension:FILE_EXTENSION];
     }
-    NSString *path = [[NSBundle mainBundle] pathForResource:_name ofType:nil];
-    return [self initWithURL:[NSURL fileURLWithPath:path]];
+	
+    NSString *path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:_name];
+	
+#ifdef DEBUG
+	
+	if (![[NSFileManager defaultManager] fileExistsAtPath:path])
+	{
+		NSLog(@"Sound file '%@' does not exist", _name);
+	}
+	
+#endif
+	
+	return [self initWithURL:[NSURL fileURLWithPath:path]];
 }
 
 - (Sound *)initWithURL:(NSURL *)_url;
@@ -204,7 +215,9 @@ NSString * const SoundFinishedPlayingNotification = @"SoundFinishedPlayingNotifi
     [(NSSound *)sound stop];
 #endif
     
-    self.selfReference = nil;
+	//autorelease so sound is not released immediately
+    [selfReference autorelease];
+	selfReference = nil;
 }
 
 #ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
@@ -214,6 +227,7 @@ NSString * const SoundFinishedPlayingNotification = @"SoundFinishedPlayingNotifi
 #endif
 {
     [self stop];
+	
     [[NSNotificationCenter defaultCenter] postNotificationName:SoundFinishedPlayingNotification object:self];
 }
 
