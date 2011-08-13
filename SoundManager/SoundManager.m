@@ -1,7 +1,7 @@
 //
 //  SoundManager.m
 //
-//  Version 1.1.2
+//  Version 1.1.3
 //
 //  Created by Nick Lockwood on 29/01/2011.
 //  Copyright 2010 Charcoal Design. All rights reserved.
@@ -86,7 +86,7 @@ NSString * const SoundFinishedPlayingNotification = @"SoundFinishedPlayingNotifi
 {
 	if ([[_name pathExtension] isEqualToString:@""])
     {
-        _name = [_name stringByAppendingPathExtension:FILE_EXTENSION];
+        _name = [_name stringByAppendingPathExtension:DEFAULT_FILE_EXTENSION];
     }
 	
     NSString *path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:_name];
@@ -358,7 +358,7 @@ static SoundManager *sharedManager = nil;
     NSArray *paths = nil;
     for (NSString *extension in extensions)
     {
-        paths = [[NSBundle mainBundle] pathsForResourcesOfType:FILE_EXTENSION inDirectory:nil];
+        paths = [[NSBundle mainBundle] pathsForResourcesOfType:extension inDirectory:nil];
         if ([paths count])
         {
             break;

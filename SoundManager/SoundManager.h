@@ -1,7 +1,7 @@
 //
 //  SoundManager.h
 //
-//  Version 1.1.2
+//  Version 1.1.3
 //
 //  Created by Nick Lockwood on 29/01/2011.
 //  Copyright 2010 Charcoal Design. All rights reserved.
@@ -33,7 +33,7 @@
 #import <Foundation/Foundation.h>
 
 
-#define FILE_EXTENSION @"caf"
+#define DEFAULT_FILE_EXTENSION @"caf"
 
 
 extern NSString * const SoundFinishedPlayingNotification;

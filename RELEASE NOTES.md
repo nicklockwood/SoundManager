@@ -1,3 +1,8 @@
+Version 1.1.3
+
+- Fixed bug where preloading only worked with .caf files.
+- Renamed FILE_EXTENSION to DEFAULT_FILE_EXTENSION to avoid confusion.
+
 Version 1.1.2
 
 - Fixed occasional crash due to accessing sound after it is released

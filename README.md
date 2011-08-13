@@ -19,7 +19,7 @@ The SoundManager package defines two classes, the SoundManager class itself, whi
 Configuration
 --------------
 
-	FILE_EXTENSION - the default file extension for sounds when not specified.
+	DEFAULT_FILE_EXTENSION - the default file extension for sounds when not specified.
 
 
 Properties
@@ -63,7 +63,7 @@ The `prepareToPlay` method preloads a random sound from your application bundle,
 
 	- (void)playSound:(NSString *)name looping:(BOOL)looping;
 
-The play method will load and play a sound from the application bundle whose filename matches the name passed. You can include the file extension in the name, or omit it, in which case the SoundManager will look for a matching file with the extension specified in the `FILE_EXTENSION` constant (defaults to .caf). If the looping argument is YES, the sound will continue to play until stopSound: is called.
+The play method will load and play a sound from the application bundle whose filename matches the name passed. You can include the file extension in the name, or omit it, in which case the SoundManager will look for a matching file with the extension specified in the `DEFAULT_FILE_EXTENSION` constant (defaults to .caf). If the looping argument is YES, the sound will continue to play until stopSound: is called.
 
 	- (void)stopSound:(NSString *)name;
 
