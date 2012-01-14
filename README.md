@@ -1,7 +1,23 @@
 Purpose
 --------------
 
-SoundManager is a simple class for playing sound and music in iPhone or Mac app store apps.
+SoundManager is a simple class for playing sound and music in iOS or Mac apps.
+
+
+Supported OS & SDK Versions
+-----------------------------
+
+* Supported build target - iOS 5.0 / Mac OS 10.7 (Xcode 4.2, Apple LLVM compiler 3.0)
+* Earliest supported deployment target - iOS 4.3 / Mac OS 10.6
+* Earliest compatible deployment target - iOS 3.0 / Mac OS 10.6
+
+NOTE: 'Supported' means that the library has been tested with this version. 'Compatible' means that the library should work on this iOS version (i.e. it doesn't rely on any unavailable SDK features) but is no longer being tested for compatibility and may require tweaking or bug fixes to run correctly.
+
+
+ARC Compatibility
+------------------
+
+As of version 1.1.4, SoundManager automatically works with both ARC and non-ARC projects through conditional compilation. There is no need to exclude SoundManager files from the ARC validation process, or to convert SoundManager using the ARC conversion tool.
 
 
 Installation
@@ -14,12 +30,6 @@ Classes
 -------------
 
 The SoundManager package defines two classes, the SoundManager class itself, which is documented below, and the Sound class, which is used as a wrapper around each sound file being played. The Sound class is not documented in this file as it is not intended to be used independently of the SoundManager, however its interface is fairly straightforward if you do wish to make use of it directly.
-
-
-Configuration
---------------
-
-	DEFAULT_FILE_EXTENSION - the default file extension for sounds when not specified.
 
 
 Properties
@@ -63,7 +73,7 @@ The `prepareToPlay` method preloads a random sound from your application bundle,
 
 	- (void)playSound:(NSString *)name looping:(BOOL)looping;
 
-The play method will load and play a sound from the application bundle whose filename matches the name passed. You can include the file extension in the name, or omit it, in which case the SoundManager will look for a matching file with the extension specified in the `DEFAULT_FILE_EXTENSION` constant (defaults to .caf). If the looping argument is YES, the sound will continue to play until stopSound: is called.
+The play method will load and play a sound from the application bundle whose filename matches the name passed. You can include the file extension in the name, or omit it, in which case the SoundManager will look for a matching file with the .caf file extension. If the looping argument is YES, the sound will continue to play until stopSound: is called.
 
 	- (void)stopSound:(NSString *)name;
 

@@ -1,15 +1,16 @@
 //
 //  SoundManager.m
 //
-//  Version 1.1.3
+//  Version 1.1.4
 //
 //  Created by Nick Lockwood on 29/01/2011.
-//  Copyright 2010 Charcoal Design. All rights reserved.
+//  Copyright 2010 Charcoal Design
 //
-//  Get the latest version of SoundManager from either of these locations:
+//  Distributed under the permissive zlib License
+//  Get the latest version from either of these locations:
 //
 //  http://charcoaldesign.co.uk/source/cocoa#soundmanager
-//  https://github.com/nicklockwood/soundmanager
+//  https://github.com/nicklockwood/SoundManager
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -28,20 +29,17 @@
 //  misrepresented as being the original software.
 //
 //  3. This notice may not be removed or altered from any source distribution.
-
+//
 
 #import "SoundManager.h"
 
 
-#pragma mark -
-#pragma Sound class
+#pragma mark Sound class
 
 
 #ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
-#import <AVFoundation/AVFoundation.h>
 @interface Sound() <AVAudioPlayerDelegate>
 #else
-#import <AppKit/AppKit.h>
 @interface Sound() <NSSoundDelegate>
 #endif
 
@@ -49,14 +47,16 @@
 @property (nonatomic, assign) float targetVolume;
 @property (nonatomic, assign) NSTimeInterval fadeTime;
 @property (nonatomic, assign) NSTimeInterval fadeStart;
-@property (nonatomic, retain) NSTimer *timer;
-@property (nonatomic, retain) Sound *selfReference;
-@property (nonatomic, retain) id sound;
+@property (nonatomic, strong) NSTimer *timer;
+@property (nonatomic, strong) Sound *selfReference;
+@property (nonatomic, strong) id sound;
+
 
 @end
 
 
-NSString * const SoundFinishedPlayingNotification = @"SoundFinishedPlayingNotification";
+NSString *const SoundFinishedPlayingNotification = @"SoundFinishedPlayingNotification";
+NSString *const SoundManagerDefaultFileExtension = @"caf";
 
 
 @implementation Sound
@@ -72,42 +72,47 @@ NSString * const SoundFinishedPlayingNotification = @"SoundFinishedPlayingNotifi
 @synthesize sound;
 
 
-+ (Sound *)soundWithName:(NSString *)name
++ (Sound *)soundNamed:(NSString *)name
 {
-    return [[[self alloc] initWithName:name] autorelease];
-}
-
-+ (Sound *)soundWithURL:(NSURL *)url
-{
-    return [[[self alloc] initWithURL:url] autorelease];
-}
-
-- (Sound *)initWithName:(NSString *)_name;
-{
-	if ([[_name pathExtension] isEqualToString:@""])
+    if ([[name pathExtension] isEqualToString:@""])
     {
-        _name = [_name stringByAppendingPathExtension:DEFAULT_FILE_EXTENSION];
+        name = [name stringByAppendingPathExtension:SoundManagerDefaultFileExtension];
     }
 	
-    NSString *path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:_name];
-	
+    NSString *path = [[NSBundle mainBundle] pathForResource:name ofType:@""];
+    return [self soundWithContentsOfFile:path];
+}
+
++ (Sound *)soundWithContentsOfFile:(NSString *)path
+{
+    return AH_AUTORELEASE([[self alloc] initWithContentsOfFile:path]);
+}
+
++ (Sound *)soundWithContentsOfURL:(NSURL *)url
+{
+    return AH_AUTORELEASE([[self alloc] initWithContentsOfURL:url]);
+}
+
+- (Sound *)initWithContentsOfFile:(NSString *)path;
+{	
+	return [self initWithContentsOfURL:path? [NSURL fileURLWithPath:path]: nil];
+}
+
+- (Sound *)initWithContentsOfURL:(NSURL *)_url;
+{
+    
 #ifdef DEBUG
 	
-	if (![[NSFileManager defaultManager] fileExistsAtPath:path])
+	if ([_url isFileURL] && ![[NSFileManager defaultManager] fileExistsAtPath:[_url path]])
 	{
-		NSLog(@"Sound file '%@' does not exist", _name);
+		NSLog(@"Sound file '%@' does not exist", [_url path]);
 	}
 	
 #endif
-	
-	return [self initWithURL:[NSURL fileURLWithPath:path]];
-}
-
-- (Sound *)initWithURL:(NSURL *)_url;
-{
+    
     if ((self = [super init]))
     {
-        url = [_url retain];
+        url = AH_RETAIN(_url);
 		baseVolume = 1.0;
         
 #ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
@@ -122,7 +127,7 @@ NSString * const SoundFinishedPlayingNotification = @"SoundFinishedPlayingNotifi
 
 - (NSString *)name
 {
-    return [[[url path] lastPathComponent] stringByDeletingPathExtension];
+    return [[url path] lastPathComponent];
 }
 
 - (void)setbaseVolume:(float)_baseVolume
@@ -163,7 +168,7 @@ NSString * const SoundFinishedPlayingNotification = @"SoundFinishedPlayingNotifi
     }
 }
 
-- (BOOL)looping
+- (BOOL)isLooping
 {
 	
 #ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
@@ -185,7 +190,7 @@ NSString * const SoundFinishedPlayingNotification = @"SoundFinishedPlayingNotifi
 	
 }
 
-- (BOOL)playing
+- (BOOL)isPlaying
 {
     return [sound isPlaying];
 }
@@ -215,9 +220,8 @@ NSString * const SoundFinishedPlayingNotification = @"SoundFinishedPlayingNotifi
     [(NSSound *)sound stop];
 #endif
     
-	//autorelease so sound is not released immediately
-    [selfReference autorelease];
-	selfReference = nil;
+	//set to nil on next runloop update so sound is not released unexpectedly
+    [self performSelector:@selector(setSelfReference:) withObject:nil afterDelay:0.0];
 }
 
 #ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
@@ -279,26 +283,23 @@ NSString * const SoundFinishedPlayingNotification = @"SoundFinishedPlayingNotifi
 - (void)dealloc
 {
     [timer invalidate];
-	[timer release];
-    [url release];
-    [sound release];
-	[super dealloc];
+    
+	AH_RELEASE(timer);
+    AH_RELEASE(url);
+    AH_RELEASE(sound);
+	AH_SUPER_DEALLOC;
 }
 
 @end
 
 
-#pragma mark -
-#pragma SoundManager class
-
-
-static SoundManager *sharedManager = nil;
+#pragma mark SoundManager class
 
 
 @interface SoundManager ()
 
-@property (nonatomic, retain) Sound *currentMusic;
-@property (nonatomic, retain) NSMutableArray *currentSounds;
+@property (nonatomic, strong) Sound *currentMusic;
+@property (nonatomic, strong) NSMutableArray *currentSounds;
 
 @end
 
@@ -316,6 +317,7 @@ static SoundManager *sharedManager = nil;
 
 + (SoundManager *)sharedManager
 {
+    static SoundManager *sharedManager = nil;
 	if (sharedManager == nil)
 	{
 		sharedManager = [[self alloc] init];
@@ -353,41 +355,42 @@ static SoundManager *sharedManager = nil;
 
 - (void)prepareToPlay
 {
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    NSArray *extensions = [NSArray arrayWithObjects:@"caf", @"m4a", @"mp4", @"mp3", @"wav", @"aif", nil];
-    NSArray *paths = nil;
-    for (NSString *extension in extensions)
+    @autoreleasepool
     {
-        paths = [[NSBundle mainBundle] pathsForResourcesOfType:extension inDirectory:nil];
-        if ([paths count])
+        NSArray *extensions = [NSArray arrayWithObjects:@"caf", @"m4a", @"mp4", @"mp3", @"wav", @"aif", nil];
+        NSArray *paths = nil;
+        for (NSString *extension in extensions)
         {
-            break;
+            paths = [[NSBundle mainBundle] pathsForResourcesOfType:extension inDirectory:nil];
+            if ([paths count])
+            {
+                break;
+            }
         }
+        NSURL *url = [NSURL fileURLWithPath:[paths objectAtIndex:0]];
+        
+    #ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
+        
+        [AVAudioSession sharedInstance];
+        AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:NULL];
+        [player prepareToPlay];
+        AH_RELEASE(player);
+        
+    #else
+        
+        NSSound *sound = [[NSSound alloc] initWithContentsOfURL:url byReference:YES];
+        [sound setVolume:0];
+        [sound play];
+        AH_RELEASE(sound);
+        
+    #endif
+        
     }
-    NSURL *url = [NSURL fileURLWithPath:[paths objectAtIndex:0]];
-    
-#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
-    
-    [AVAudioSession sharedInstance];
-    AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:NULL];
-    [player prepareToPlay];
-    [player release];
-    
-#else
-    
-    NSSound *sound = [[NSSound alloc] initWithContentsOfURL:url byReference:YES];
-    [sound setVolume:0];
-    [sound play];
-    [sound release];
-    
-#endif
-    
-    [pool drain];
 }
 
 - (void)playMusic:(NSString *)name looping:(BOOL)looping
 {		
-	Sound *music = [Sound soundWithName:name];
+	Sound *music = [Sound soundNamed:name];
     if (![music.url isEqual:currentMusic.url])
 	{
 		if (currentMusic && currentMusic.playing)
@@ -414,7 +417,7 @@ static SoundManager *sharedManager = nil;
 
 - (void)playSound:(NSString *)name looping:(BOOL)looping
 {
-    Sound *sound = [Sound soundWithName:name];
+    Sound *sound = [Sound soundNamed:name];
     [currentSounds addObject:sound];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(soundFinished:)
@@ -448,7 +451,7 @@ static SoundManager *sharedManager = nil;
     [currentSounds removeAllObjects];
 }
 
-- (BOOL)playingMusic
+- (BOOL)isPlayingMusic
 {
     return currentMusic != nil;
 }
@@ -490,8 +493,9 @@ static SoundManager *sharedManager = nil;
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-	[currentMusic release];
-	[super dealloc];
+    
+	AH_RELEASE(currentMusic);
+	AH_SUPER_DEALLOC;
 }
 
 @end

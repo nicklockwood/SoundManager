@@ -1,15 +1,16 @@
 //
 //  SoundManager.h
 //
-//  Version 1.1.3
+//  Version 1.1.4
 //
 //  Created by Nick Lockwood on 29/01/2011.
-//  Copyright 2010 Charcoal Design. All rights reserved.
+//  Copyright 2010 Charcoal Design
 //
-//  Get the latest version of SoundManager from either of these locations:
+//  Distributed under the permissive zlib License
+//  Get the latest version from either of these locations:
 //
 //  http://charcoaldesign.co.uk/source/cocoa#soundmanager
-//  https://github.com/nicklockwood/soundmanager
+//  https://github.com/nicklockwood/SoundManager
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -28,20 +29,60 @@
 //  misrepresented as being the original software.
 //
 //  3. This notice may not be removed or altered from any source distribution.
+//
+
+//
+//  ARC Helper
+//
+//  Version 1.2
+//
+//  Created by Nick Lockwood on 05/01/2012.
+//  Copyright 2012 Charcoal Design
+//
+//  Distributed under the permissive MIT License
+//  Get the latest version from here:
+//
+//  https://gist.github.com/1563325
+//
+
+#ifndef AH_RETAIN
+#if __has_feature(objc_arc)
+#define AH_RETAIN(x) x
+#define AH_RELEASE(x)
+#define AH_AUTORELEASE(x) x
+#define AH_SUPER_DEALLOC
+#else
+#define __AH_WEAK
+#define AH_WEAK assign
+#define AH_RETAIN(x) [x retain]
+#define AH_RELEASE(x) [x release]
+#define AH_AUTORELEASE(x) [x autorelease]
+#define AH_SUPER_DEALLOC [super dealloc]
+#endif
+#endif
+
+//  ARC Helper ends
 
 
-#import <Foundation/Foundation.h>
+#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
+#import <UIKit/UIKit.h>
+#import <AVFoundation/AVFoundation.h>
+#else
+#import <Cocoa/Cocoa.h>
+#endif
 
 
-#define DEFAULT_FILE_EXTENSION @"caf"
-
-
-extern NSString * const SoundFinishedPlayingNotification;
+extern NSString *const SoundFinishedPlayingNotification;
+extern NSString *const SoundManagerDefaultFileExtension;
 
 
 @interface Sound : NSObject
+
+//required for 32-bit Macs
 #ifdef __i386__
-{    
+{
+	@private
+
 	float baseVolume;
     float startVolume;
     float targetVolume;
@@ -54,16 +95,16 @@ extern NSString * const SoundFinishedPlayingNotification;
 }
 #endif
 
-+ (Sound *)soundWithName:(NSString *)name;
-+ (Sound *)soundWithURL:(NSURL *)url;
++ (Sound *)soundNamed:(NSString *)name;
++ (Sound *)soundWithContentsOfFile:(NSString *)path;
+- (Sound *)initWithContentsOfFile:(NSString *)path;
++ (Sound *)soundWithContentsOfURL:(NSURL *)url;
+- (Sound *)initWithContentsOfURL:(NSURL *)url;
 
-- (Sound *)initWithName:(NSString *)name;
-- (Sound *)initWithURL:(NSURL *)url;
-
-@property (nonatomic, retain, readonly) NSString *name;
-@property (nonatomic, retain, readonly) NSURL *url;
-@property (nonatomic, assign, readonly) BOOL playing;
-@property (nonatomic, assign) BOOL looping;
+@property (nonatomic, readonly, copy) NSString *name;
+@property (nonatomic, readonly, strong) NSURL *url;
+@property (nonatomic, readonly, getter = isPlaying) BOOL playing;
+@property (nonatomic, assign, getter = isLooping) BOOL looping;
 @property (nonatomic, assign) float baseVolume;
 @property (nonatomic, assign) float volume;
 
@@ -77,8 +118,12 @@ extern NSString * const SoundFinishedPlayingNotification;
 
 
 @interface SoundManager : NSObject
+
+//required for 32-bit Macs
 #ifdef __i386__
-{    
+{
+	@private
+	
     Sound *currentMusic;
     NSMutableArray *currentSounds;
     BOOL allowsBackgroundMusic;
@@ -89,7 +134,7 @@ extern NSString * const SoundFinishedPlayingNotification;
 }
 #endif
 
-@property (nonatomic, readonly) BOOL playingMusic;
+@property (nonatomic, readonly, getter = isPlayingMusic) BOOL playingMusic;
 @property (nonatomic, assign) BOOL allowsBackgroundMusic;
 @property (nonatomic, assign) float soundVolume;
 @property (nonatomic, assign) float musicVolume;

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0177130A14C10C080050C6BC /* SoundManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0177130914C10C080050C6BC /* SoundManager.m */; };
 		B26A6141134478F700479C89 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B26A6140134478F700479C89 /* UIKit.framework */; };
 		B26A6143134478F700479C89 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B26A6142134478F700479C89 /* Foundation.framework */; };
 		B26A6145134478F700479C89 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B26A6144134478F700479C89 /* CoreGraphics.framework */; };
@@ -20,11 +21,12 @@
 		B26A617113447A1700479C89 /* sound2.caf in Resources */ = {isa = PBXBuildFile; fileRef = B26A616A13447A1700479C89 /* sound2.caf */; };
 		B26A617213447A1700479C89 /* track1.caf in Resources */ = {isa = PBXBuildFile; fileRef = B26A616B13447A1700479C89 /* track1.caf */; };
 		B26A617313447A1700479C89 /* track2.caf in Resources */ = {isa = PBXBuildFile; fileRef = B26A616C13447A1700479C89 /* track2.caf */; };
-		B26A617413447A1700479C89 /* SoundManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B26A616F13447A1700479C89 /* SoundManager.m */; };
 		B26A617713447BB000479C89 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B26A617613447BB000479C89 /* AVFoundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0177130814C10C080050C6BC /* SoundManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundManager.h; sourceTree = "<group>"; };
+		0177130914C10C080050C6BC /* SoundManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SoundManager.m; sourceTree = "<group>"; };
 		B26A613C134478F700479C89 /* SoundManagerExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SoundManagerExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B26A6140134478F700479C89 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		B26A6142134478F700479C89 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -43,8 +45,6 @@
 		B26A616A13447A1700479C89 /* sound2.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = sound2.caf; sourceTree = "<group>"; };
 		B26A616B13447A1700479C89 /* track1.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = track1.caf; sourceTree = "<group>"; };
 		B26A616C13447A1700479C89 /* track2.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = track2.caf; sourceTree = "<group>"; };
-		B26A616E13447A1700479C89 /* SoundManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundManager.h; sourceTree = "<group>"; };
-		B26A616F13447A1700479C89 /* SoundManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SoundManager.m; sourceTree = "<group>"; };
 		B26A617613447BB000479C89 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -63,11 +63,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0177130714C10C080050C6BC /* SoundManager */ = {
+			isa = PBXGroup;
+			children = (
+				0177130814C10C080050C6BC /* SoundManager.h */,
+				0177130914C10C080050C6BC /* SoundManager.m */,
+			);
+			name = SoundManager;
+			path = ../../SoundManager;
+			sourceTree = "<group>";
+		};
 		B26A6131134478F700479C89 = {
 			isa = PBXGroup;
 			children = (
+				0177130714C10C080050C6BC /* SoundManager */,
 				B26A616813447A1700479C89 /* Sounds */,
-				B26A616D13447A1700479C89 /* SoundManager */,
 				B26A6146134478F700479C89 /* SoundManagerExample */,
 				B26A613F134478F700479C89 /* Frameworks */,
 				B26A613D134478F700479C89 /* Products */,
@@ -128,16 +138,6 @@
 			);
 			name = Sounds;
 			path = ../Sounds;
-			sourceTree = "<group>";
-		};
-		B26A616D13447A1700479C89 /* SoundManager */ = {
-			isa = PBXGroup;
-			children = (
-				B26A616E13447A1700479C89 /* SoundManager.h */,
-				B26A616F13447A1700479C89 /* SoundManager.m */,
-			);
-			name = SoundManager;
-			path = ../SoundManager;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -207,7 +207,7 @@
 				B26A614E134478F700479C89 /* main.m in Sources */,
 				B26A6151134478F700479C89 /* SoundManagerExampleAppDelegate.m in Sources */,
 				B26A6157134478F700479C89 /* SoundManagerExampleViewController.m in Sources */,
-				B26A617413447A1700479C89 /* SoundManager.m in Sources */,
+				0177130A14C10C080050C6BC /* SoundManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -281,6 +281,7 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SoundManagerExample/SoundManagerExample-Prefix.pch";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "SoundManagerExample/SoundManagerExample-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
@@ -294,6 +295,7 @@
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SoundManagerExample/SoundManagerExample-Prefix.pch";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "SoundManagerExample/SoundManagerExample-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALIDATE_PRODUCT = YES;

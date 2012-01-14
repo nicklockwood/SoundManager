@@ -1,3 +1,11 @@
+Version 1.1.4
+
+- Added automatic support for ARC compile targets
+- Now requires Apple LLVM 3.0 compiler target
+- playing, looping and playingMusic properties now use more standard getter names
+- Sound class initialisers refactored to match iOS conventions
+- Sound name method now returns name including file extension
+
 Version 1.1.3
 
 - Fixed bug where preloading only worked with .caf files.
