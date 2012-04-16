@@ -1,3 +1,7 @@
+Version 1.2.1
+
+- The `prepareToPlay` method no longer crashes if the project includes no sound files
+
 Version 1.2
 
 - Added automatic support for ARC compile targets

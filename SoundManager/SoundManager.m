@@ -1,12 +1,12 @@
 //
 //  SoundManager.m
 //
-//  Version 1.2
+//  Version 1.2.1
 //
 //  Created by Nick Lockwood on 29/01/2011.
 //  Copyright 2010 Charcoal Design
 //
-//  Distributed under the permissive zlib License
+//  Distributed under the permissive zlib license
 //  Get the latest version from either of these locations:
 //
 //  http://charcoaldesign.co.uk/source/cocoa#soundmanager
@@ -49,14 +49,13 @@
 @property (nonatomic, assign) NSTimeInterval fadeStart;
 @property (nonatomic, strong) NSTimer *timer;
 @property (nonatomic, strong) Sound *selfReference;
-@property (nonatomic, strong) id sound;
+@property (nonatomic, strong) SMSound *sound;
 
 
 @end
 
 
-NSString *const SoundFinishedPlayingNotification = @"SoundFinishedPlayingNotification";
-NSString *const SoundManagerDefaultFileExtension = @"caf";
+NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotification";
 
 
 @implementation Sound
@@ -76,9 +75,9 @@ NSString *const SoundManagerDefaultFileExtension = @"caf";
 {
     if ([[name pathExtension] isEqualToString:@""])
     {
-        name = [name stringByAppendingPathExtension:SoundManagerDefaultFileExtension];
+        name = [name stringByAppendingPathExtension:@"caf"];
     }
-	
+    
     NSString *path = [[NSBundle mainBundle] pathForResource:name ofType:@""];
     return [self soundWithContentsOfFile:path];
 }
@@ -94,33 +93,33 @@ NSString *const SoundManagerDefaultFileExtension = @"caf";
 }
 
 - (Sound *)initWithContentsOfFile:(NSString *)path;
-{	
-	return [self initWithContentsOfURL:path? [NSURL fileURLWithPath:path]: nil];
+{   
+    return [self initWithContentsOfURL:path? [NSURL fileURLWithPath:path]: nil];
 }
 
 - (Sound *)initWithContentsOfURL:(NSURL *)_url;
 {
     
 #ifdef DEBUG
-	
-	if ([_url isFileURL] && ![[NSFileManager defaultManager] fileExistsAtPath:[_url path]])
-	{
-		NSLog(@"Sound file '%@' does not exist", [_url path]);
-	}
-	
+    
+    if ([_url isFileURL] && ![[NSFileManager defaultManager] fileExistsAtPath:[_url path]])
+    {
+        NSLog(@"Sound file '%@' does not exist", [_url path]);
+    }
+    
 #endif
     
     if ((self = [super init]))
     {
         url = AH_RETAIN(_url);
-		baseVolume = 1.0;
+        baseVolume = 1.0;
         
 #ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
         sound = [[AVAudioPlayer alloc] initWithContentsOfURL:_url error:NULL];
 #else
         sound = [[NSSound alloc] initWithContentsOfURL:_url byReference:YES];
 #endif
-		self.volume = 1.0;
+        self.volume = 1.0;
     }
     return self;
 }
@@ -132,14 +131,14 @@ NSString *const SoundManagerDefaultFileExtension = @"caf";
 
 - (void)setbaseVolume:(float)_baseVolume
 {
-	_baseVolume = fmin(1.0, fmax(0.0, _baseVolume));
-	
-	if (baseVolume != _baseVolume)
-	{
-		float previousVolume = self.volume;
-		baseVolume = _baseVolume;
-		self.volume = previousVolume;
-	}
+    _baseVolume = fmin(1.0, fmax(0.0, _baseVolume));
+    
+    if (baseVolume != _baseVolume)
+    {
+        float previousVolume = self.volume;
+        baseVolume = _baseVolume;
+        self.volume = previousVolume;
+    }
 }
 
 - (float)volume
@@ -156,8 +155,8 @@ NSString *const SoundManagerDefaultFileExtension = @"caf";
 
 - (void)setVolume:(float)volume
 {
-	volume = fmin(1.0, fmax(0.0, volume));
-	
+    volume = fmin(1.0, fmax(0.0, volume));
+    
     if (timer)
     {
         targetVolume = volume * baseVolume;
@@ -170,24 +169,24 @@ NSString *const SoundManagerDefaultFileExtension = @"caf";
 
 - (BOOL)isLooping
 {
-	
+    
 #ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
-	return [sound numberOfLoops] == -1;
+    return [sound numberOfLoops] == -1;
 #else
-	return [sound loops];
+    return [sound loops];
 #endif
-	
+    
 }
 
 - (void)setLooping:(BOOL)looping
 {
-	
+    
 #ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
-	[sound setNumberOfLoops:looping? -1: 0];
+    [sound setNumberOfLoops:looping? -1: 0];
 #else
-	[sound setLoops:looping];
+    [sound setLoops:looping];
 #endif
-	
+    
 }
 
 - (BOOL)isPlaying
@@ -202,25 +201,21 @@ NSString *const SoundManagerDefaultFileExtension = @"caf";
         self.selfReference = self;
         [sound setDelegate:self];
         
-#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
-        [(AVAudioPlayer *)sound play];
-#else
-        [(NSSound *)sound play];
-#endif
-        
+        //play sound
+        [sound play];
     }
 }
 
 - (void)stop
 {
+    //stop playing
+    [sound stop];
     
-#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
-    [(AVAudioPlayer *)sound stop];
-#else
-    [(NSSound *)sound stop];
-#endif
+    //stop timer
+    [timer invalidate];
+    self.timer = nil;
     
-	//set to nil on next runloop update so sound is not released unexpectedly
+    //set to nil on next runloop update so sound is not released unexpectedly
     [self performSelector:@selector(setSelfReference:) withObject:nil afterDelay:0.0];
 }
 
@@ -231,63 +226,61 @@ NSString *const SoundManagerDefaultFileExtension = @"caf";
 #endif
 {
     [self stop];
-	
-    [[NSNotificationCenter defaultCenter] postNotificationName:SoundFinishedPlayingNotification object:self];
+    [[NSNotificationCenter defaultCenter] postNotificationName:SoundDidFinishPlayingNotification object:self];
 }
 
 - (void)fadeTo:(float)volume duration:(NSTimeInterval)duration
 {
-	startVolume = [sound volume];
-	targetVolume = volume * baseVolume;
-	fadeTime = duration;
-	fadeStart = [[NSDate date] timeIntervalSinceReferenceDate];
-	if (timer == nil)
-	{
-		self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0/60.0
-													  target:self
-													selector:@selector(tick)
-													userInfo:nil
-													 repeats:YES];
-	}
+    startVolume = [sound volume];
+    targetVolume = volume * baseVolume;
+    fadeTime = duration;
+    fadeStart = [[NSDate date] timeIntervalSinceReferenceDate];
+    if (timer == nil)
+    {
+        self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0/60.0
+                                                      target:self
+                                                    selector:@selector(tick)
+                                                    userInfo:nil
+                                                     repeats:YES];
+    }
 }
 
 - (void)fadeIn:(NSTimeInterval)duration
 {
-	[sound setVolume:0.0];
+    [sound setVolume:0.0];
     [self fadeTo:1.0 duration:duration];
 }
 
 - (void)fadeOut:(NSTimeInterval)duration
 {
-	[self fadeTo:0.0 duration:duration];
+    [self fadeTo:0.0 duration:duration];
 }
 
 - (void)tick
 {
-	NSTimeInterval now = [[NSDate date] timeIntervalSinceReferenceDate];
-	float delta = (now - fadeStart)/fadeTime * (targetVolume - startVolume);
-	[sound setVolume:(startVolume + delta) * baseVolume];
-	if ((delta > 0 && [sound volume] >= targetVolume) ||
+    NSTimeInterval now = [[NSDate date] timeIntervalSinceReferenceDate];
+    float delta = (now - fadeStart)/fadeTime * (targetVolume - startVolume);
+    [sound setVolume:(startVolume + delta) * baseVolume];
+    if ((delta > 0 && [sound volume] >= targetVolume) ||
         (delta < 0 && [sound volume] <= targetVolume))
-	{
-		[sound setVolume:targetVolume * baseVolume];
-		[timer invalidate];
-		self.timer = nil;
-	}
-    if ([sound volume] == 0)
     {
-        [self stop];
+        [sound setVolume:targetVolume * baseVolume];
+        [timer invalidate];
+        self.timer = nil;
+        if ([sound volume] == 0)
+        {
+            [self stop];
+        }
     }
 }
 
 - (void)dealloc
 {
     [timer invalidate];
-    
-	AH_RELEASE(timer);
+    AH_RELEASE(timer);
     AH_RELEASE(url);
     AH_RELEASE(sound);
-	AH_SUPER_DEALLOC;
+    AH_SUPER_DEALLOC;
 }
 
 @end
@@ -318,11 +311,11 @@ NSString *const SoundManagerDefaultFileExtension = @"caf";
 + (SoundManager *)sharedManager
 {
     static SoundManager *sharedManager = nil;
-	if (sharedManager == nil)
-	{
-		sharedManager = [[self alloc] init];
-	}
-	return sharedManager;
+    if (sharedManager == nil)
+    {
+        sharedManager = [[self alloc] init];
+    }
+    return sharedManager;
 }
 
 - (SoundManager *)init
@@ -342,7 +335,7 @@ NSString *const SoundManagerDefaultFileExtension = @"caf";
 {
     if (allowsBackgroundMusic != allow)
     {
-
+        
 #ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
         
         allowsBackgroundMusic = allow;
@@ -364,49 +357,45 @@ NSString *const SoundManagerDefaultFileExtension = @"caf";
             paths = [[NSBundle mainBundle] pathsForResourcesOfType:extension inDirectory:nil];
             if ([paths count])
             {
+                NSURL *url = [NSURL fileURLWithPath:[paths objectAtIndex:0]];
+                
+#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
+                
+                [AVAudioSession sharedInstance];
+                AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:NULL];
+                [player prepareToPlay];
+                AH_RELEASE(player);
+#else
+                NSSound *sound = [[NSSound alloc] initWithContentsOfURL:url byReference:YES];
+                [sound setVolume:0];
+                [sound play];
+                AH_RELEASE(sound);
+#endif                
                 break;
             }
         }
-        NSURL *url = [NSURL fileURLWithPath:[paths objectAtIndex:0]];
-        
-    #ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
-        
-        [AVAudioSession sharedInstance];
-        AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:NULL];
-        [player prepareToPlay];
-        AH_RELEASE(player);
-        
-    #else
-        
-        NSSound *sound = [[NSSound alloc] initWithContentsOfURL:url byReference:YES];
-        [sound setVolume:0];
-        [sound play];
-        AH_RELEASE(sound);
-        
-    #endif
-        
     }
 }
 
 - (void)playMusic:(NSString *)name looping:(BOOL)looping
-{		
-	Sound *music = [Sound soundNamed:name];
+{       
+    Sound *music = [Sound soundNamed:name];
     if (![music.url isEqual:currentMusic.url])
-	{
-		if (currentMusic && currentMusic.playing)
-		{
-			[currentMusic fadeOut:musicFadeDuration];
-		}
-		self.currentMusic = music;
+    {
+        if (currentMusic && currentMusic.playing)
+        {
+            [currentMusic fadeOut:musicFadeDuration];
+        }
+        self.currentMusic = music;
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(musicFinished:)
-                                                     name:SoundFinishedPlayingNotification
+                                                     name:SoundDidFinishPlayingNotification
                                                    object:music];
-		currentMusic.looping = looping;
-		currentMusic.volume = 0.0;
-		[currentMusic play];
-		[currentMusic fadeTo:musicVolume duration:musicFadeDuration];
-	}
+        currentMusic.looping = looping;
+        currentMusic.volume = 0.0;
+        [currentMusic play];
+        [currentMusic fadeTo:musicVolume duration:musicFadeDuration];
+    }
 }
 
 - (void)stopMusic
@@ -421,10 +410,10 @@ NSString *const SoundManagerDefaultFileExtension = @"caf";
     [currentSounds addObject:sound];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(soundFinished:)
-                                                 name:SoundFinishedPlayingNotification
+                                                 name:SoundDidFinishPlayingNotification
                                                object:sound];
     sound.volume = soundVolume;
-	sound.looping = looping;
+    sound.looping = looping;
     [sound play];
 }
 
@@ -475,7 +464,7 @@ NSString *const SoundManagerDefaultFileExtension = @"caf";
 {
     [currentSounds removeObject:[notification object]];
     [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:SoundFinishedPlayingNotification
+                                                    name:SoundDidFinishPlayingNotification
                                                   object:[notification object]];
 }
 
@@ -485,7 +474,7 @@ NSString *const SoundManagerDefaultFileExtension = @"caf";
     {
         self.currentMusic = nil;
         [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                        name:SoundFinishedPlayingNotification
+                                                        name:SoundDidFinishPlayingNotification
                                                       object:[notification object]];
     }
 }
@@ -493,9 +482,8 @@ NSString *const SoundManagerDefaultFileExtension = @"caf";
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
-	AH_RELEASE(currentMusic);
-	AH_SUPER_DEALLOC;
+    AH_RELEASE(currentMusic);
+    AH_SUPER_DEALLOC;
 }
 
 @end

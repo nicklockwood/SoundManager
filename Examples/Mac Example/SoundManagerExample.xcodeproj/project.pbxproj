@@ -163,7 +163,7 @@
 		B2147EEA1344827300C8FB9B /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0440;
 			};
 			buildConfigurationList = B2147EED1344827300C8FB9B /* Build configuration list for PBXProject "SoundManagerExample" */;
 			compatibilityVersion = "Xcode 3.2";

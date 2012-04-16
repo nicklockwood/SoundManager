@@ -69,7 +69,7 @@ This class method returns a shared singleton instance of the SoundManager.
 
 	- (void)prepareToPlay;
 
-The `prepareToPlay` method preloads a random sound from your application bundle, which initialises the audio playback. It should be called before you attempt to play any audio, ideally during the startup sequence, to eliminate the delay when you first play a sound or music track.
+The `prepareToPlay` method preloads a random sound from your application bundle, which initialises the audio playback. It should be called before you attempt to play any audio, ideally during the startup sequence, to eliminate the delay when you first play a sound or music track. *Note:* this will only work if at least one sound file is included in the root of your application bundle. If all of your sound files are in folders, consider adding an additional short, silent sound file for initialisation purposes.
 
 	- (void)playSound:(NSString *)name looping:(BOOL)looping;
 
@@ -95,7 +95,7 @@ This will fade out the currently playing music track over the period specified b
 Notifications
 ---------------
 
-	SoundFinishedPlayingNotification
+	SoundDidFinishPlayingNotification
 
 This notification is fired (via NSNotificationCenter) whenever a sound finishes playing, either due to it ending naturally, or because the stop method was called. The notification object is an instance of the Sound class, which is used internally by SoundManager to play sound and music files. You can access the Sound class's `name` property to find out which sound has finished.
 
