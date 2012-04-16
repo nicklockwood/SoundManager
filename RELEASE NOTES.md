@@ -1,4 +1,4 @@
-Version 1.1.4
+Version 1.2
 
 - Added automatic support for ARC compile targets
 - Now requires Apple LLVM 3.0 compiler target
@@ -9,7 +9,7 @@ Version 1.1.4
 Version 1.1.3
 
 - Fixed bug where preloading only worked with .caf files.
-- Renamed FILE_EXTENSION to DEFAULT_FILE_EXTENSION to avoid confusion.
+- Renamed `FILE_EXTENSION` to `DEFAULT_FILE_EXTENSION` to avoid confusion.
 
 Version 1.1.2
 

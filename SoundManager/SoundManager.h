@@ -1,7 +1,7 @@
 //
 //  SoundManager.h
 //
-//  Version 1.1.4
+//  Version 1.2
 //
 //  Created by Nick Lockwood on 29/01/2011.
 //  Copyright 2010 Charcoal Design
@@ -39,7 +39,7 @@
 //  Created by Nick Lockwood on 05/01/2012.
 //  Copyright 2012 Charcoal Design
 //
-//  Distributed under the permissive MIT License
+//  Distributed under the permissive zlib License
 //  Get the latest version from here:
 //
 //  https://gist.github.com/1563325

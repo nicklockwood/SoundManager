@@ -17,7 +17,7 @@ NOTE: 'Supported' means that the library has been tested with this version. 'Com
 ARC Compatibility
 ------------------
 
-As of version 1.1.4, SoundManager automatically works with both ARC and non-ARC projects through conditional compilation. There is no need to exclude SoundManager files from the ARC validation process, or to convert SoundManager using the ARC conversion tool.
+As of version 1.2, SoundManager automatically works with both ARC and non-ARC projects through conditional compilation. There is no need to exclude SoundManager files from the ARC validation process, or to convert SoundManager using the ARC conversion tool.
 
 
 Installation
