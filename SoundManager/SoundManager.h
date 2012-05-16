@@ -1,7 +1,7 @@
 //
 //  SoundManager.h
 //
-//  Version 1.2.1
+//  Version 1.3
 //
 //  Created by Nick Lockwood on 29/01/2011.
 //  Copyright 2010 Charcoal Design
@@ -80,6 +80,9 @@
 extern NSString *const SoundDidFinishPlayingNotification;
 
 
+typedef void (^SoundCompletionHandler)(BOOL didFinish);
+
+
 @interface Sound : NSObject
 
 //required for 32-bit Macs
@@ -96,6 +99,7 @@ extern NSString *const SoundDidFinishPlayingNotification;
     Sound *selfReference;
     NSURL *url;
     SMSound *sound;
+    SoundCompletionHandler completionHandler;
 }
 #endif
 
@@ -106,9 +110,10 @@ extern NSString *const SoundDidFinishPlayingNotification;
 - (Sound *)initWithContentsOfURL:(NSURL *)url;
 
 @property (nonatomic, readonly, copy) NSString *name;
-@property (nonatomic, readonly, strong, ) NSURL *url;
+@property (nonatomic, readonly, strong) NSURL *url;
 @property (nonatomic, readonly, getter = isPlaying) BOOL playing;
 @property (nonatomic, assign, getter = isLooping) BOOL looping;
+@property (nonatomic, copy) SoundCompletionHandler completionHandler;
 @property (nonatomic, assign) float baseVolume;
 @property (nonatomic, assign) float volume;
 
@@ -147,11 +152,23 @@ extern NSString *const SoundDidFinishPlayingNotification;
 
 + (SoundManager *)sharedManager;
 
+- (void)prepareToPlayWithSound:(id)soundOrName;
 - (void)prepareToPlay;
-- (void)playMusic:(NSString *)name looping:(BOOL)looping;
+
+- (void)playMusic:(id)soundOrName looping:(BOOL)looping fadeIn:(BOOL)fadeIn;
+- (void)playMusic:(id)soundOrName looping:(BOOL)looping;
+- (void)playMusic:(id)soundOrName;
+
+- (void)stopMusic:(BOOL)fadeOut;
 - (void)stopMusic;
-- (void)playSound:(NSString *)name looping:(BOOL)looping;
-- (void)stopSound:(NSString *)name;
+
+- (void)playSound:(id)soundOrName looping:(BOOL)looping fadeIn:(BOOL)fadeIn;
+- (void)playSound:(id)soundOrName looping:(BOOL)looping;
+- (void)playSound:(id)soundOrName;
+
+- (void)stopSound:(id)soundOrName fadeOut:(BOOL)fadeOut;
+- (void)stopSound:(id)soundOrName;
+- (void)stopAllSounds:(BOOL)fadeOut;
 - (void)stopAllSounds;
 
 @end

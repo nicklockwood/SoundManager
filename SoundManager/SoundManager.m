@@ -1,7 +1,7 @@
 //
 //  SoundManager.m
 //
-//  Version 1.2.1
+//  Version 1.3
 //
 //  Created by Nick Lockwood on 29/01/2011.
 //  Copyright 2010 Charcoal Design
@@ -37,6 +37,9 @@
 #pragma mark Sound class
 
 
+NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotification";
+
+
 #ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
 @interface Sound() <AVAudioPlayerDelegate>
 #else
@@ -51,11 +54,9 @@
 @property (nonatomic, strong) Sound *selfReference;
 @property (nonatomic, strong) SMSound *sound;
 
+- (void)prepareToPlay;
 
 @end
-
-
-NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotification";
 
 
 @implementation Sound
@@ -69,16 +70,19 @@ NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotif
 @synthesize selfReference;
 @synthesize url;
 @synthesize sound;
-
+@synthesize completionHandler;
 
 + (Sound *)soundNamed:(NSString *)name
 {
-    if ([[name pathExtension] isEqualToString:@""])
+    NSString *path = name;
+    if (![path isAbsolutePath])
     {
-        name = [name stringByAppendingPathExtension:@"caf"];
+        if ([[name pathExtension] isEqualToString:@""])
+        {
+            name = [name stringByAppendingPathExtension:@"caf"];
+        }
+        path = [[NSBundle mainBundle] pathForResource:name ofType:@""];
     }
-    
-    NSString *path = [[NSBundle mainBundle] pathForResource:name ofType:@""];
     return [self soundWithContentsOfFile:path];
 }
 
@@ -112,16 +116,38 @@ NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotif
     if ((self = [super init]))
     {
         url = AH_RETAIN(_url);
-        baseVolume = 1.0;
+        baseVolume = 1.0f;
         
 #ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
         sound = [[AVAudioPlayer alloc] initWithContentsOfURL:_url error:NULL];
 #else
         sound = [[NSSound alloc] initWithContentsOfURL:_url byReference:YES];
 #endif
-        self.volume = 1.0;
+        self.volume = 1.0f;
     }
     return self;
+}
+
+- (void)prepareToPlay
+{
+    //avoid overhead from repeated calls
+    static BOOL prepared = NO;
+    if (prepared) return;
+    prepared = YES;
+
+#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
+    
+    [AVAudioSession sharedInstance];
+    [sound prepareToPlay];
+    
+#else
+    
+    [sound setVolume:0.0f];
+    [self play];
+    [self performSelector:@selector(stop) withObject:nil afterDelay:0.0];
+    
+#endif
+    
 }
 
 - (NSString *)name
@@ -131,7 +157,7 @@ NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotif
 
 - (void)setbaseVolume:(float)_baseVolume
 {
-    _baseVolume = fmin(1.0, fmax(0.0, _baseVolume));
+    _baseVolume = fminf(1.0f, fmaxf(0.0f, _baseVolume));
     
     if (baseVolume != _baseVolume)
     {
@@ -155,7 +181,7 @@ NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotif
 
 - (void)setVolume:(float)volume
 {
-    volume = fmin(1.0, fmax(0.0, volume));
+    volume = fminf(1.0f, fmaxf(0.0f, volume));
     
     if (timer)
     {
@@ -208,25 +234,40 @@ NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotif
 
 - (void)stop
 {
-    //stop playing
-    [sound stop];
-    
-    //stop timer
-    [timer invalidate];
-    self.timer = nil;
-    
-    //set to nil on next runloop update so sound is not released unexpectedly
-    [self performSelector:@selector(setSelfReference:) withObject:nil afterDelay:0.0];
+    if (self.playing)
+    {
+        //stop playing
+        [sound stop];
+        
+        //stop timer
+        [timer invalidate];
+        self.timer = nil;
+        
+        //fire events
+        if (completionHandler) completionHandler(NO);
+        [[NSNotificationCenter defaultCenter] postNotificationName:SoundDidFinishPlayingNotification object:self];
+        
+        //set to nil on next runloop update so sound is not released unexpectedly
+        [self performSelector:@selector(setSelfReference:) withObject:nil afterDelay:0.0];
+    }
 }
 
 #ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
-- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag
+- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)finishedPlaying
 #else
 - (void)sound:(NSSound *)_sound didFinishPlaying:(BOOL)finishedPlaying
 #endif
 {
-    [self stop];
+    //stop timer
+    [timer invalidate];
+    self.timer = nil;
+    
+    //fire events
+    if (completionHandler) completionHandler(NO);
     [[NSNotificationCenter defaultCenter] postNotificationName:SoundDidFinishPlayingNotification object:self];
+    
+    //set to nil on next runloop update so sound is not released unexpectedly
+    [self performSelector:@selector(setSelfReference:) withObject:nil afterDelay:0.0];
 }
 
 - (void)fadeTo:(float)volume duration:(NSTimeInterval)duration
@@ -247,13 +288,13 @@ NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotif
 
 - (void)fadeIn:(NSTimeInterval)duration
 {
-    [sound setVolume:0.0];
-    [self fadeTo:1.0 duration:duration];
+    [sound setVolume:0.0f];
+    [self fadeTo:1.0f duration:duration];
 }
 
 - (void)fadeOut:(NSTimeInterval)duration
 {
-    [self fadeTo:0.0 duration:duration];
+    [self fadeTo:0.0f duration:duration];
 }
 
 - (void)tick
@@ -261,13 +302,13 @@ NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotif
     NSTimeInterval now = [[NSDate date] timeIntervalSinceReferenceDate];
     float delta = (now - fadeStart)/fadeTime * (targetVolume - startVolume);
     [sound setVolume:(startVolume + delta) * baseVolume];
-    if ((delta > 0 && [sound volume] >= targetVolume) ||
-        (delta < 0 && [sound volume] <= targetVolume))
+    if ((delta > 0.0f && [sound volume] >= targetVolume) ||
+        (delta < 0.0f && [sound volume] <= targetVolume))
     {
         [sound setVolume:targetVolume * baseVolume];
         [timer invalidate];
         self.timer = nil;
-        if ([sound volume] == 0)
+        if ([sound volume] == 0.0f)
         {
             [self stop];
         }
@@ -280,6 +321,7 @@ NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotif
     AH_RELEASE(timer);
     AH_RELEASE(url);
     AH_RELEASE(sound);
+    AH_RELEASE(completionHandler);
     AH_SUPER_DEALLOC;
 }
 
@@ -307,7 +349,6 @@ NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotif
 @synthesize soundFadeDuration;
 @synthesize musicFadeDuration;
 
-
 + (SoundManager *)sharedManager
 {
     static SoundManager *sharedManager = nil;
@@ -322,8 +363,8 @@ NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotif
 {
     if ((self = [super init]))
     {
-        soundVolume = 1.0;
-        musicVolume = 1.0;
+        soundVolume = 1.0f;
+        musicVolume = 1.0f;
         soundFadeDuration = 1.0;
         musicFadeDuration = 1.0;
         currentSounds = [[NSMutableArray alloc] init];
@@ -346,40 +387,39 @@ NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotif
     }
 }
 
+- (void)prepareToPlayWithSound:(id)soundOrName
+{
+    Sound *sound = [soundOrName isKindOfClass:[Sound class]]? soundOrName: [Sound soundNamed:soundOrName];
+    [sound prepareToPlay];
+}
+
 - (void)prepareToPlay
 {
     @autoreleasepool
     {
         NSArray *extensions = [NSArray arrayWithObjects:@"caf", @"m4a", @"mp4", @"mp3", @"wav", @"aif", nil];
         NSArray *paths = nil;
+        BOOL foundSound = NO;
         for (NSString *extension in extensions)
         {
             paths = [[NSBundle mainBundle] pathsForResourcesOfType:extension inDirectory:nil];
             if ([paths count])
             {
-                NSURL *url = [NSURL fileURLWithPath:[paths objectAtIndex:0]];
-                
-#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
-                
-                [AVAudioSession sharedInstance];
-                AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:NULL];
-                [player prepareToPlay];
-                AH_RELEASE(player);
-#else
-                NSSound *sound = [[NSSound alloc] initWithContentsOfURL:url byReference:YES];
-                [sound setVolume:0];
-                [sound play];
-                AH_RELEASE(sound);
-#endif                
+                [self prepareToPlayWithSound:[paths objectAtIndex:0]];
+                foundSound = YES;
                 break;
             }
+        }
+        if (!foundSound)
+        {
+            NSLog(@"SoundManager prepareToPlay failed to find sound in application bundle. Use prepareToPlayWithSound: instead to specify a suitable sound file.");
         }
     }
 }
 
-- (void)playMusic:(NSString *)name looping:(BOOL)looping
-{       
-    Sound *music = [Sound soundNamed:name];
+- (void)playMusic:(id)soundOrName looping:(BOOL)looping fadeIn:(BOOL)fadeIn
+{
+    Sound *music = [soundOrName isKindOfClass:[Sound class]]? soundOrName: [Sound soundNamed:soundOrName];
     if (![music.url isEqual:currentMusic.url])
     {
         if (currentMusic && currentMusic.playing)
@@ -392,52 +432,127 @@ NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotif
                                                      name:SoundDidFinishPlayingNotification
                                                    object:music];
         currentMusic.looping = looping;
-        currentMusic.volume = 0.0;
+        currentMusic.volume = fadeIn? 0.0f: musicVolume;
         [currentMusic play];
-        [currentMusic fadeTo:musicVolume duration:musicFadeDuration];
+        if (fadeIn)
+        {
+            [currentMusic fadeTo:musicVolume duration:musicFadeDuration];
+        }
     }
+}
+
+- (void)playMusic:(id)soundOrName looping:(BOOL)looping
+{       
+    [self playMusic:soundOrName looping:looping fadeIn:YES];
+}
+
+- (void)playMusic:(id)soundOrName
+{       
+    [self playMusic:soundOrName looping:YES fadeIn:YES];
+}
+
+- (void)stopMusic:(BOOL)fadeOut
+{
+    if (fadeOut)
+    {
+        [currentMusic fadeOut:musicFadeDuration];
+    }
+    else
+    {
+        [currentMusic stop];
+    }
+    self.currentMusic = nil;
 }
 
 - (void)stopMusic
 {
-    [currentMusic fadeOut:musicFadeDuration];
-    self.currentMusic = nil;
+    [self stopMusic:YES];
 }
 
-- (void)playSound:(NSString *)name looping:(BOOL)looping
+- (void)playSound:(id)soundOrName looping:(BOOL)looping fadeIn:(BOOL)fadeIn
 {
-    Sound *sound = [Sound soundNamed:name];
-    [currentSounds addObject:sound];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(soundFinished:)
-                                                 name:SoundDidFinishPlayingNotification
-                                               object:sound];
-    sound.volume = soundVolume;
-    sound.looping = looping;
-    [sound play];
-}
-
-- (void)stopSound:(NSString *)name
-{
-    NSInteger i;
-    for (i = [currentSounds count] - 1; i >= 0; i--)
+    Sound *sound = [soundOrName isKindOfClass:[Sound class]]? soundOrName: [Sound soundNamed:soundOrName];
+    if (![currentSounds containsObject:sound])
     {
-        Sound *sound = [currentSounds objectAtIndex:i];
-        if ([sound.name isEqualToString:name])
+        [currentSounds addObject:sound];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(soundFinished:)
+                                                     name:SoundDidFinishPlayingNotification
+                                                   object:sound];
+    }
+    sound.looping = looping;
+    sound.volume = fadeIn? 0.0f: soundVolume;
+    [sound play];
+    if (fadeIn)
+    {
+        [sound fadeTo:soundVolume duration:soundFadeDuration];
+    }
+}
+
+- (void)playSound:(id)soundOrName looping:(BOOL)looping
+{
+    [self playSound:soundOrName looping:looping fadeIn:NO];
+}
+
+- (void)playSound:(id)soundOrName
+{
+    [self playSound:soundOrName looping:NO fadeIn:NO];
+}
+
+- (void)stopSound:(id)soundOrName fadeOut:(BOOL)fadeOut
+{
+    if ([soundOrName isKindOfClass:[Sound class]])
+    {
+        if (fadeOut)
         {
-            [sound fadeOut:soundFadeDuration];
-            [currentSounds removeObjectAtIndex:i];
+            [(Sound *)soundOrName fadeOut:soundFadeDuration];
         }
+        else
+        {
+            [(Sound *)soundOrName stop];
+        }
+        [currentSounds removeObject:soundOrName];
+        return;
+    }
+    
+    if ([[soundOrName pathExtension] isEqualToString:@""])
+    {
+        soundOrName = [soundOrName stringByAppendingPathExtension:@"caf"];
+    }
+    
+    for (Sound *sound in [currentSounds reverseObjectEnumerator])
+    {
+        if ([sound.name isEqualToString:soundOrName] || [[sound.url path] isEqualToString:soundOrName])
+        {
+            if (fadeOut)
+            {
+                [sound fadeOut:soundFadeDuration];
+            }
+            else
+            {
+                [sound stop];
+            }
+            [currentSounds removeObject:sound];
+        }
+    }
+}
+
+- (void)stopSound:(id)soundOrName
+{
+    [self stopSound:soundOrName fadeOut:YES];
+}
+
+- (void)stopAllSounds:(BOOL)fadeOut
+{
+    for (Sound *sound in currentSounds)
+    {
+        [self stopSound:sound fadeOut:YES];
     }
 }
 
 - (void)stopAllSounds
 {
-    for (Sound *sound in currentSounds)
-    {
-        [sound fadeOut:soundFadeDuration];
-    }
-    [currentSounds removeAllObjects];
+    [self stopAllSounds:YES];
 }
 
 - (BOOL)isPlayingMusic
@@ -462,20 +577,22 @@ NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotif
 
 - (void)soundFinished:(NSNotification *)notification
 {
-    [currentSounds removeObject:[notification object]];
+    Sound *sound = [notification object];
+    [currentSounds removeObject:sound];
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:SoundDidFinishPlayingNotification
-                                                  object:[notification object]];
+                                                  object:sound];
 }
 
 - (void)musicFinished:(NSNotification *)notification
 {
-    if ([notification object] == currentMusic)
+    Sound *sound = [notification object];
+    if (sound == currentMusic)
     {
         self.currentMusic = nil;
         [[NSNotificationCenter defaultCenter] removeObserver:self
                                                         name:SoundDidFinishPlayingNotification
-                                                      object:[notification object]];
+                                                      object:sound];
     }
 }
 
@@ -483,6 +600,7 @@ NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotif
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     AH_RELEASE(currentMusic);
+    AH_RELEASE(currentSounds);
     AH_SUPER_DEALLOC;
 }
 

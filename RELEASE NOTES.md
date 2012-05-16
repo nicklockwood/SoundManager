@@ -1,3 +1,10 @@
+Version 1.3
+
+- Added block-based completion handler callback for Sound class
+- Sound manager can now play sounds either by name or by object reference
+- Extended SoundManager class with additional fading options
+- Can now preload sounds that are not in the root application bundle
+
 Version 1.2.1
 
 - The `prepareToPlay` method no longer crashes if the project includes no sound files

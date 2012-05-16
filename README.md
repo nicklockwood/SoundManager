@@ -7,7 +7,7 @@ SoundManager is a simple class for playing sound and music in iOS or Mac apps.
 Supported OS & SDK Versions
 -----------------------------
 
-* Supported build target - iOS 5.0 / Mac OS 10.7 (Xcode 4.2, Apple LLVM compiler 3.0)
+* Supported build target - iOS 5.1 / Mac OS 10.7 (Xcode 4.3, Apple LLVM compiler 3.1)
 * Earliest supported deployment target - iOS 4.3 / Mac OS 10.6
 * Earliest compatible deployment target - iOS 3.0 / Mac OS 10.6
 
@@ -29,13 +29,80 @@ To use the SoundManager class in an app, just drag the class files into your pro
 Classes
 -------------
 
-The SoundManager package defines two classes, the SoundManager class itself, which is documented below, and the Sound class, which is used as a wrapper around each sound file being played. The Sound class is not documented in this file as it is not intended to be used independently of the SoundManager, however its interface is fairly straightforward if you do wish to make use of it directly.
+The SoundManager package defines two classes, the SoundManager class itself, which is documented below, and the Sound class, which is used as a wrapper around each sound file being played. The Sound class can be used either directly or with the SoundManager class.
 
 
-Properties
---------------
+Sound properties
+-------------------
 
-	@property (nonatomic, readonly) BOOL playingMusic;
+    @property (nonatomic, readonly, copy) NSString *name;
+    
+The name of the sound. This is either the name that was passed to the `soundNamed:` constructor method, or the last path component of the sound file.
+    
+    @property (nonatomic, readonly, strong) NSURL *url;
+    
+The absolute URL of the sound file.
+    
+    @property (nonatomic, readonly, getter = isPlaying) BOOL playing;
+    
+Returns YES if the sound is currently playing and NO if it isn't (read only).
+    
+    @property (nonatomic, assign, getter = isLooping) BOOL looping;
+    
+Returns YES if the sound has been set to loop, and NO if it hasn't.
+    
+    @property (nonatomic, copy) SoundCompletionHandler completionHandler;
+    
+A callback block that will be called when the sound finishes playing, or is stopped. Only one completionHandler block can be set on any given Sound instance, but if you need multiple objects to track the Sound's status, you can add observers for the `SoundDidFinishPlayingNotification` notification instead. 
+    
+    @property (nonatomic, assign) float baseVolume;
+    
+The maximum volume of the sound. Some sounds are louder than others and it can be annoying trying to manage the volumes of different sounds in your app individually in code. The baseVolume property allows you to equalise the volumes of different sounds on creation, then you can adjust their volumes consistently from that point on.
+    
+    @property (nonatomic, assign) float volume;
+    
+The sound volume. This is multiplied by the baseVolume property to get the actual volume. Defaults to 1.0 (maximum).
+
+
+Sound methods
+-------------------
+
+    + (Sound *)soundNamed:(NSString *)name;
+    
+This is a handy shorthand constructor method that returns a sound based on the name of a file in the application bundle. If the file extension is omitted, it is assumed to be a .caf file. If you pass a fully-qualified path to this method then it behaves the same way as `soundWithContentsOfFile:`.
+    
+    + (Sound *)soundWithContentsOfFile:(NSString *)path;
+    - (Sound *)initWithContentsOfFile:(NSString *)path;
+    + (Sound *)soundWithContentsOfURL:(NSURL *)url;
+    - (Sound *)initWithContentsOfURL:(NSURL *)url;
+    
+These methods create a new Sound instance from a file path or URL.
+
+    - (void)fadeTo:(float)volume duration:(NSTimeInterval)duration;
+    
+This method fades a sound from it's current volume to the specified volume over the specified time period. Note that this method will not play the sound, so you will need to call `play` prior to calling this method, unless the sound is already playing.
+    
+    - (void)fadeIn:(NSTimeInterval)duration;
+    
+Fades the sound volume from 0.0 to 1.0 over the specified duration. The sound volume will be set to zero if it not already. See the caveat above about sounds that aren't playing.
+    
+    - (void)fadeOut:(NSTimeInterval)duration;
+    
+Fades the sound from it's current volume to 0.0 over the specified duration. When the sound volume reaches zero, the sound's stop method is automatically called.
+    
+    - (void)play;
+    
+Plays the sound. Has no effect if the sound is already playing.
+    
+    - (void)stop;
+
+Stops the sound. Has no effect if the sound is not already playing.
+
+
+SoundManager properties
+--------------------------
+
+	@property (nonatomic, readonly, getter = isPlayingMusic) BOOL playingMusic;
 
 This readonly property reports if the SoundManager is currently playing music.
 
@@ -60,8 +127,8 @@ The fade in/out and crossfade duration for music tracks (defaults to 1 second).
 The fade out time for sounds when stopSound is called (defaults to 1 second).
 
 
-Methods
---------------
+SoundManager methods
+------------------------
 
 	+ (SoundManager *)sharedManager;
 
@@ -69,27 +136,38 @@ This class method returns a shared singleton instance of the SoundManager.
 
 	- (void)prepareToPlay;
 
-The `prepareToPlay` method preloads a random sound from your application bundle, which initialises the audio playback. It should be called before you attempt to play any audio, ideally during the startup sequence, to eliminate the delay when you first play a sound or music track. *Note:* this will only work if at least one sound file is included in the root of your application bundle. If all of your sound files are in folders, consider adding an additional short, silent sound file for initialisation purposes.
+The `prepareToPlay` method preloads a random sound from your application bundle, which initialises the audio playback. It should be called before you attempt to play any audio, ideally during the startup sequence, to eliminate the delay when you first play a sound or music track. *Note:* this will only work if at least one sound file is included in the root of your application bundle. If all of your sound files are in folders, consider adding an additional short, silent sound file for initialisation purposes, or use the `prepareToPlayWithSound:` method instead.
 
-	- (void)playSound:(NSString *)name looping:(BOOL)looping;
+    - (void)prepareToPlayWithSound:(id)soundOrName;
 
-The play method will load and play a sound from the application bundle whose filename matches the name passed. You can include the file extension in the name, or omit it, in which case the SoundManager will look for a matching file with the .caf file extension. If the looping argument is YES, the sound will continue to play until stopSound: is called.
+If your sounds are not located in the root of the application bundle (or even in the bundles at all) then the standard `prepareToPlay` method won't work. In this case you can use the `prepareToPlayWithSound:` method instead and specify a particular sound to use for initialisation. The parameter can be a filename, path (either relative or absolute) or an instance of the Sound class.
 
-	- (void)stopSound:(NSString *)name;
+    - (void)playSound:(id)soundOrName looping:(BOOL)looping fadeIn:(BOOL)fadeIn;
+    - (void)playSound:(id)soundOrName looping:(BOOL)looping;
+	- (void)playSound:(id)soundOrName;
 
-This method will fade out the named sound over the period specified by `soundFadeDuration`. If there are multiple instances of the sound playing then they will all be stopped.
+The play method will play a sound. The parameter can be either a previously created Sound instance, or a name or path for a sound file to be loaded. You can include the file extension in the name, or omit it, in which case the SoundManager will look for a matching file with the .caf file extension. If the looping argument is YES, the sound will continue to play until stopSound: is called. If the fadeIn argument is YES, the sound will fade in from zero to full volume over the time specified by the `soundFadeDuration` property of the SoundManager class. If omitted, looping and fadeIn both default to NO.
 
+	- (void)stopSound:(id)soundOrName fadeOut:(BOOL)fadeOut;
+    - (void)stopSound:(id)soundOrName;
+
+This method will either stop the sound immediately, or fade it out over the period specified by `soundFadeDuration`, depending on the fadeOut argument (defaults to YES). The soundOrName parameter can be either a previously created Sound instance, or a name or path. If there are multiple instances of the sound playing then they will all be stopped.
+
+    - (void)stopAllSounds:(BOOL)fadeOut;
 	- (void)stopAllSounds;
 
-This method will fade out all currently-playing sounds, but not music. It is equivalent to calling `stopSound` for each sound that is playing.
+This method will stop and/or fade out all currently-playing sounds, but not music. It is equivalent to calling `stopSound` for each sound that is playing.
 
-	- (void)playMusic:(NSString *)name looping:(BOOL)looping;
+	- (void)playMusic:(id)soundOrName looping:(BOOL)looping fadeIn:(BOOL)fadeIn;
+    - (void)playMusic:(id)soundOrName looping:(BOOL)looping;
+    - (void)playMusic:(id)soundOrName;
 
-This method plays a music track. The music will fade in from silent to the  volume specified by the musicVolume property over a period of time specified by `musicFadeDuration`. The sound manager only allows one music track to be played at a time, so if an existing track is playing it will be faded out. If the looping argument is YES, the music will continue to play until `stopMusic` is called.
+This method plays a music track. If the fadeIn argument is YES, the music will fade in from silent to the volume specified by the musicVolume property over a period of time specified by `musicFadeDuration` (defaults to YES if omitted). The sound manager only allows one music track to be played at a time, so if an existing track is playing it will be faded out. If the looping argument is YES, the music will continue to play until `stopMusic` is called (defaults to YES if omitted).
 
+    - (void)stopMusic:(BOOL)fadeOut;
 	- (void)stopMusic;
 
-This will fade out the currently playing music track over the period specified by `musicFadeDuration`.
+This will stop and/or fade out the currently playing music track over the period specified by `musicFadeDuration`.
 
 
 Notifications
