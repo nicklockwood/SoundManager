@@ -23,7 +23,7 @@ As of version 1.2, SoundManager automatically works with both ARC and non-ARC pr
 Installation
 --------------
 
-To use the SoundManager class in an app, just drag the class files into your project. For iOS apps you will also need to add the AVFoundation framework.
+To use the SoundManager class in an app, just drag the class files into your project. For iOS apps, or Mac OS apps with a deployment target of 10.7 (Lion) or above you will also need to add the AVFoundation framework.
 
 
 Classes

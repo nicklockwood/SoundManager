@@ -1,7 +1,7 @@
 //
 //  SoundManager.h
 //
-//  Version 1.3
+//  Version 1.3.1
 //
 //  Created by Nick Lockwood on 29/01/2011.
 //  Copyright 2010 Charcoal Design
@@ -67,13 +67,22 @@
 
 
 #import <Availability.h>
-#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED)
 #import <UIKit/UIKit.h>
-#import <AVFoundation/AVFoundation.h>
-#define SMSound AVAudioPlayer
+#define SM_USE_AV_AUDIO_PLAYER
 #else
 #import <Cocoa/Cocoa.h>
-#define SMSound NSSound
+#if __MAC_OS_X_VERSION_MIN_REQUIRED > __MAC_10_6
+#define SM_USE_AV_AUDIO_PLAYER
+#endif
+#endif
+
+
+#ifdef SM_USE_AV_AUDIO_PLAYER
+#import <AVFoundation/AVFoundation.h>
+#define SM_SOUND AVAudioPlayer
+#else
+#define SM_SOUND NSSound
 #endif
 
 
@@ -98,7 +107,7 @@ typedef void (^SoundCompletionHandler)(BOOL didFinish);
     NSTimer *timer;
     Sound *selfReference;
     NSURL *url;
-    SMSound *sound;
+    SM_SOUND *sound;
     SoundCompletionHandler completionHandler;
 }
 #endif

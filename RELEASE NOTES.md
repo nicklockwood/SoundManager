@@ -1,3 +1,7 @@
+Version 1.3.1
+
+- For Mac OS projects with a deployment target of Mac OS 10.7 (Lion) or above, SoundManager now uses AVAudioPlayer instead of NSSound
+
 Version 1.3
 
 - Added block-based completion handler callback for Sound class

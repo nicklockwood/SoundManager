@@ -18,6 +18,7 @@
 		B2147F25134483F600C8FB9B /* sound2.caf in Resources */ = {isa = PBXBuildFile; fileRef = B2147F1E134483F600C8FB9B /* sound2.caf */; };
 		B2147F26134483F600C8FB9B /* track1.caf in Resources */ = {isa = PBXBuildFile; fileRef = B2147F1F134483F600C8FB9B /* track1.caf */; };
 		B2147F27134483F600C8FB9B /* track2.caf in Resources */ = {isa = PBXBuildFile; fileRef = B2147F20134483F600C8FB9B /* track2.caf */; };
+		B22B85171564FA540001A7C2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B22B85161564FA540001A7C2 /* AVFoundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +41,7 @@
 		B2147F1E134483F600C8FB9B /* sound2.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = sound2.caf; sourceTree = "<group>"; };
 		B2147F1F134483F600C8FB9B /* track1.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = track1.caf; sourceTree = "<group>"; };
 		B2147F20134483F600C8FB9B /* track2.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = track2.caf; sourceTree = "<group>"; };
+		B22B85161564FA540001A7C2 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +49,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B22B85171564FA540001A7C2 /* AVFoundation.framework in Frameworks */,
 				B2147EF81344827400C8FB9B /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -86,6 +89,7 @@
 		B2147EF61344827400C8FB9B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B22B85161564FA540001A7C2 /* AVFoundation.framework */,
 				B2147EF71344827400C8FB9B /* Cocoa.framework */,
 				B2147EF91344827400C8FB9B /* Other Frameworks */,
 			);
@@ -282,6 +286,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SoundManagerExample/SoundManagerExample-Prefix.pch";
 				INFOPLIST_FILE = "SoundManagerExample/SoundManagerExample-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -297,6 +302,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SoundManagerExample/SoundManagerExample-Prefix.pch";
 				INFOPLIST_FILE = "SoundManagerExample/SoundManagerExample-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};

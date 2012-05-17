@@ -1,7 +1,7 @@
 //
 //  SoundManager.m
 //
-//  Version 1.3
+//  Version 1.3.1
 //
 //  Created by Nick Lockwood on 29/01/2011.
 //  Copyright 2010 Charcoal Design
@@ -40,7 +40,7 @@
 NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotification";
 
 
-#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
+#ifdef SM_USE_AV_AUDIO_PLAYER
 @interface Sound() <AVAudioPlayerDelegate>
 #else
 @interface Sound() <NSSoundDelegate>
@@ -52,7 +52,7 @@ NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotif
 @property (nonatomic, assign) NSTimeInterval fadeStart;
 @property (nonatomic, strong) NSTimer *timer;
 @property (nonatomic, strong) Sound *selfReference;
-@property (nonatomic, strong) SMSound *sound;
+@property (nonatomic, strong) SM_SOUND *sound;
 
 - (void)prepareToPlay;
 
@@ -118,7 +118,7 @@ NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotif
         url = AH_RETAIN(_url);
         baseVolume = 1.0f;
         
-#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
+#ifdef SM_USE_AV_AUDIO_PLAYER
         sound = [[AVAudioPlayer alloc] initWithContentsOfURL:_url error:NULL];
 #else
         sound = [[NSSound alloc] initWithContentsOfURL:_url byReference:YES];
@@ -135,9 +135,12 @@ NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotif
     if (prepared) return;
     prepared = YES;
 
-#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
+#ifdef SM_USE_AV_AUDIO_PLAYER
     
+#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
     [AVAudioSession sharedInstance];
+#endif
+    
     [sound prepareToPlay];
     
 #else
@@ -196,7 +199,7 @@ NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotif
 - (BOOL)isLooping
 {
     
-#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
+#ifdef SM_USE_AV_AUDIO_PLAYER
     return [sound numberOfLoops] == -1;
 #else
     return [sound loops];
@@ -207,7 +210,7 @@ NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotif
 - (void)setLooping:(BOOL)looping
 {
     
-#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
+#ifdef SM_USE_AV_AUDIO_PLAYER
     [sound setNumberOfLoops:looping? -1: 0];
 #else
     [sound setLoops:looping];
@@ -252,7 +255,7 @@ NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotif
     }
 }
 
-#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
+#ifdef SM_USE_AV_AUDIO_PLAYER
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)finishedPlaying
 #else
 - (void)sound:(NSSound *)_sound didFinishPlaying:(BOOL)finishedPlaying
