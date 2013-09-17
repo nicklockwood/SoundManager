@@ -547,7 +547,7 @@ NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotif
 
 - (void)stopAllSounds:(BOOL)fadeOut
 {
-    for (Sound *sound in currentSounds)
+    for (Sound *sound in [currentSounds reverseObjectEnumerator])
     {
         [self stopSound:sound fadeOut:YES];
     }
