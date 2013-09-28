@@ -7,9 +7,9 @@ SoundManager is a simple class for playing sound and music in iOS or Mac apps.
 Supported OS & SDK Versions
 -----------------------------
 
-* Supported build target - iOS 5.1 / Mac OS 10.7 (Xcode 4.3, Apple LLVM compiler 3.1)
-* Earliest supported deployment target - iOS 4.3 / Mac OS 10.6
-* Earliest compatible deployment target - iOS 3.0 / Mac OS 10.6
+* Supported build target - iOS 7.0 / Mac OS 10.8 (Xcode 5.0, Apple LLVM compiler 5.0)
+* Earliest supported deployment target - iOS 5.0 / Mac OS 10.7
+* Earliest compatible deployment target - iOS 4.3 / Mac OS 10.6 (64 bit)
 
 NOTE: 'Supported' means that the library has been tested with this version. 'Compatible' means that the library should work on this iOS version (i.e. it doesn't rely on any unavailable SDK features) but is no longer being tested for compatibility and may require tweaking or bug fixes to run correctly.
 
@@ -17,7 +17,9 @@ NOTE: 'Supported' means that the library has been tested with this version. 'Com
 ARC Compatibility
 ------------------
 
-As of version 1.2, SoundManager automatically works with both ARC and non-ARC projects through conditional compilation. There is no need to exclude SoundManager files from the ARC validation process, or to convert SoundManager using the ARC conversion tool.
+As of version 1.4, SoundManager requires ARC. If you wish to use SoundManager in a non-ARC project, just add the -fobjc-arc compiler flag to the SoundManager.m class. To do this, go to the Build Phases tab in your target settings, open the Compile Sources group, double-click iRate.m in the list and type -fobjc-arc into the popover.
+
+If you wish to convert your whole project to ARC, comment out the #error line in SoundManager.m, then run the Edit > Refactor > Convert to Objective-C ARC... tool in Xcode and make sure all files that you wish to use ARC for (including SoundManager.m) are checked.
 
 
 Installation
@@ -39,9 +41,17 @@ Sound properties
     
 The name of the sound. This is either the name that was passed to the `soundNamed:` constructor method, or the last path component of the sound file.
     
-    @property (nonatomic, readonly, strong) NSURL *url;
+    @property (nonatomic, readonly, strong) NSURL *URL;
     
 The absolute URL of the sound file.
+
+    @property (nonatomic, readonly) NSTimeInterval duration;
+    
+The duration (in seconds) of the sound file.
+
+    @property (nonatomic, assign) NSTimeInterval currentTime;
+    
+The current time offset (in seconds) of the sound file. This value is readwrite, so you can (for example) set it to zero to rewind the sound.
     
     @property (nonatomic, readonly, getter = isPlaying) BOOL playing;
     
@@ -63,6 +73,10 @@ The maximum volume of the sound. Some sounds are louder than others and it can b
     
 The sound volume. This is multiplied by the baseVolume property to get the actual volume. Defaults to 1.0 (maximum).
 
+    @property (nonatomic, assign) float pan;
+    
+The left/right stereo pan of the file. Value ranges from -1.0 to 1.0 and can be used to shift the location of the sound in space. Has no effect on Mac OS 10.6.
+
 
 Sound methods
 -------------------
@@ -73,8 +87,8 @@ This is a handy shorthand constructor method that returns a sound based on the n
     
     + (Sound *)soundWithContentsOfFile:(NSString *)path;
     - (Sound *)initWithContentsOfFile:(NSString *)path;
-    + (Sound *)soundWithContentsOfURL:(NSURL *)url;
-    - (Sound *)initWithContentsOfURL:(NSURL *)url;
+    + (Sound *)soundWithContentsOfURL:(NSURL *)URL;
+    - (Sound *)initWithContentsOfURL:(NSURL *)URL;
     
 These methods create a new Sound instance from a file path or URL.
 
@@ -96,7 +110,7 @@ Plays the sound. Has no effect if the sound is already playing.
     
     - (void)stop;
 
-Stops the sound. Has no effect if the sound is not already playing.
+Stops the sound. Has no effect if the sound is not already playing. Stopping the sound does not reset the currentTime, so playing a stopeed sound will resume from the last played time.
 
 
 SoundManager properties

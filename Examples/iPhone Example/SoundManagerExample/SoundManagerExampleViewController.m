@@ -49,19 +49,19 @@
     }
 }
 
-- (IBAction)switchTrack:(UIButton *)sender
+- (IBAction)switchTrack:(__unused UIButton *)sender
 {
     trackIndex ++;
     trackIndex = trackIndex % 2;
     [self playMusic];
 }
 
-- (IBAction)playSound1:(UIButton *)sender
+- (IBAction)playSound1:(__unused UIButton *)sender
 {
     [[SoundManager sharedManager] playSound:@"sound1" looping:NO];
 }
 
-- (IBAction)playSound2:(UIButton *)sender
+- (IBAction)playSound2:(__unused UIButton *)sender
 {
     [[SoundManager sharedManager] playSound:@"sound2" looping:NO];
 }
@@ -74,12 +74,6 @@
 - (IBAction)setMusicVolume:(UISlider *)sender
 {
     [SoundManager sharedManager].musicVolume = sender.value;
-}
-
-- (void)dealloc
-{
-    [switchTrackButton release];
-    [super dealloc];
 }
 
 @end

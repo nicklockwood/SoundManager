@@ -14,7 +14,7 @@
 @synthesize switchTrackButton;
 @synthesize trackIndex;
 
-- (void)applicationDidFinishLaunching:(NSNotification *)notification
+- (void)applicationDidFinishLaunching:(__unused NSNotification *)notification
 {
     [[SoundManager sharedManager] prepareToPlay];
 }
@@ -47,19 +47,19 @@
     }
 }
 
-- (IBAction)switchTrack:(NSButton *)sender
+- (IBAction)switchTrack:(__unused NSButton *)sender
 {
     trackIndex ++;
     trackIndex = trackIndex % 2;
     [self playMusic];
 }
 
-- (IBAction)playSound1:(NSButton *)sender
+- (IBAction)playSound1:(__unused NSButton *)sender
 {
     [[SoundManager sharedManager] playSound:@"sound1" looping:NO];
 }
 
-- (IBAction)playSound2:(NSButton *)sender
+- (IBAction)playSound2:(__unused NSButton *)sender
 {
     [[SoundManager sharedManager] playSound:@"sound2" looping:NO];
 }

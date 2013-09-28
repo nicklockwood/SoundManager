@@ -11,13 +11,13 @@
 
 @interface SoundManagerExampleAppDelegate : NSObject <NSApplicationDelegate> {
 @private
-    NSWindow *window;
-    NSButton *switchTrackButton;
+    NSWindow *__weak window;
+    NSButton *__weak switchTrackButton;
     NSUInteger trackIndex;
 }
 
-@property (assign) IBOutlet NSWindow *window;
-@property (assign) IBOutlet NSButton *switchTrackButton;
+@property (weak) IBOutlet NSWindow *window;
+@property (weak) IBOutlet NSButton *switchTrackButton;
 @property (assign) NSUInteger trackIndex;
 
 - (IBAction)playPauseMusic:(NSButton *)sender;

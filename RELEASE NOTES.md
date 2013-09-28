@@ -1,3 +1,14 @@
+Version 1.4
+
+- Added duration and currentTime properties
+- Added pan property
+- Fixed crash due to modifying array during enumeration
+- stopMusic method now respects the fadeOut property
+- Now requires ARC
+- Now requires a 64 bit processor on Mac OS
+- Now conforms to -Wall and -Wextra warning levels
+- Added podspec
+
 Version 1.3.1
 
 - For Mac OS projects with a deployment target of Mac OS 10.7 (Lion) or above, SoundManager now uses AVAudioPlayer instead of NSSound

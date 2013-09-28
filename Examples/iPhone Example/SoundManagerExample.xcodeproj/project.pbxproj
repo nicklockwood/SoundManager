@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0177130A14C10C080050C6BC /* SoundManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0177130914C10C080050C6BC /* SoundManager.m */; };
+		019986DD17F6EB22008F53A9 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 019986DC17F6EB22008F53A9 /* Default-568h@2x.png */; };
 		B26A6141134478F700479C89 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B26A6140134478F700479C89 /* UIKit.framework */; };
 		B26A6143134478F700479C89 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B26A6142134478F700479C89 /* Foundation.framework */; };
 		B26A6145134478F700479C89 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B26A6144134478F700479C89 /* CoreGraphics.framework */; };
@@ -27,6 +28,7 @@
 /* Begin PBXFileReference section */
 		0177130814C10C080050C6BC /* SoundManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundManager.h; sourceTree = "<group>"; };
 		0177130914C10C080050C6BC /* SoundManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SoundManager.m; sourceTree = "<group>"; };
+		019986DC17F6EB22008F53A9 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		B26A613C134478F700479C89 /* SoundManagerExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SoundManagerExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B26A6140134478F700479C89 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		B26A6142134478F700479C89 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -120,6 +122,7 @@
 		B26A6147134478F700479C89 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				019986DC17F6EB22008F53A9 /* Default-568h@2x.png */,
 				B26A6148134478F700479C89 /* SoundManagerExample-Info.plist */,
 				B26A6149134478F700479C89 /* InfoPlist.strings */,
 				B26A614C134478F700479C89 /* SoundManagerExample-Prefix.pch */,
@@ -166,7 +169,7 @@
 		B26A6133134478F700479C89 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0440;
+				LastUpgradeCheck = 0500;
 			};
 			buildConfigurationList = B26A6136134478F700479C89 /* Build configuration list for PBXProject "SoundManagerExample" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -195,6 +198,7 @@
 				B26A615A134478F700479C89 /* SoundManagerExampleViewController.xib in Resources */,
 				B26A617013447A1700479C89 /* sound1.caf in Resources */,
 				B26A617113447A1700479C89 /* sound2.caf in Resources */,
+				019986DD17F6EB22008F53A9 /* Default-568h@2x.png in Resources */,
 				B26A617213447A1700479C89 /* track1.caf in Resources */,
 				B26A617313447A1700479C89 /* track2.caf in Resources */,
 			);
@@ -247,32 +251,43 @@
 		B26A615B134478F700479C89 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				WARNING_CFLAGS = (
+					"-Wall",
+					"-Wextra",
+				);
 			};
 			name = Debug;
 		};
 		B26A615C134478F700479C89 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				SDKROOT = iphoneos;
+				WARNING_CFLAGS = (
+					"-Wall",
+					"-Wextra",
+				);
 			};
 			name = Release;
 		};

@@ -1,15 +1,14 @@
 //
 //  SoundManager.h
 //
-//  Version 1.3.1
+//  Version 1.4
 //
 //  Created by Nick Lockwood on 29/01/2011.
 //  Copyright 2010 Charcoal Design
 //
 //  Distributed under the permissive zlib license
-//  Get the latest version from either of these locations:
+//  Get the latest version from here:
 //
-//  http://charcoaldesign.co.uk/source/cocoa#soundmanager
 //  https://github.com/nicklockwood/SoundManager
 //
 //  This software is provided 'as-is', without any express or implied
@@ -31,54 +30,21 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 
-//
-//  ARC Helper
-//
-//  Version 1.3
-//
-//  Created by Nick Lockwood on 05/01/2012.
-//  Copyright 2012 Charcoal Design
-//
-//  Distributed under the permissive zlib license
-//  Get the latest version from here:
-//
-//  https://gist.github.com/1563325
-//
-
-#ifndef AH_RETAIN
-#if __has_feature(objc_arc)
-#define AH_RETAIN(x) (x)
-#define AH_RELEASE(x) (void)(x)
-#define AH_AUTORELEASE(x) (x)
-#define AH_SUPER_DEALLOC (void)(0)
-#define __AH_BRIDGE __bridge
-#else
-#define __AH_WEAK
-#define AH_WEAK assign
-#define AH_RETAIN(x) [(x) retain]
-#define AH_RELEASE(x) [(x) release]
-#define AH_AUTORELEASE(x) [(x) autorelease]
-#define AH_SUPER_DEALLOC [super dealloc]
-#define __AH_BRIDGE
-#endif
-#endif
-
-//  ARC Helper ends
-
 
 #import <Availability.h>
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED)
+#if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
-#define SM_USE_AV_AUDIO_PLAYER
+#define SM_USE_AV_AUDIO_PLAYER 1
 #else
 #import <Cocoa/Cocoa.h>
-#if __MAC_OS_X_VERSION_MIN_REQUIRED > __MAC_10_6
-#define SM_USE_AV_AUDIO_PLAYER
+#if !defined(SM_USE_AV_AUDIO_PLAYER) && \
+__MAC_OS_X_VERSION_MIN_REQUIRED > __MAC_10_6
+#define SM_USE_AV_AUDIO_PLAYER 1
 #endif
 #endif
 
 
-#ifdef SM_USE_AV_AUDIO_PLAYER
+#if SM_USE_AV_AUDIO_PLAYER
 #import <AVFoundation/AVFoundation.h>
 #define SM_SOUND AVAudioPlayer
 #else
@@ -94,37 +60,22 @@ typedef void (^SoundCompletionHandler)(BOOL didFinish);
 
 @interface Sound : NSObject
 
-//required for 32-bit Macs
-#ifdef __i386__
-{
-    @private
-    
-    float baseVolume;
-    float startVolume;
-    float targetVolume;
-    NSTimeInterval fadeTime;
-    NSTimeInterval fadeStart;
-    NSTimer *timer;
-    Sound *selfReference;
-    NSURL *url;
-    SM_SOUND *sound;
-    SoundCompletionHandler completionHandler;
-}
-#endif
-
 + (Sound *)soundNamed:(NSString *)name;
 + (Sound *)soundWithContentsOfFile:(NSString *)path;
 - (Sound *)initWithContentsOfFile:(NSString *)path;
-+ (Sound *)soundWithContentsOfURL:(NSURL *)url;
-- (Sound *)initWithContentsOfURL:(NSURL *)url;
++ (Sound *)soundWithContentsOfURL:(NSURL *)URL;
+- (Sound *)initWithContentsOfURL:(NSURL *)URL;
 
 @property (nonatomic, readonly, copy) NSString *name;
-@property (nonatomic, readonly, strong) NSURL *url;
+@property (nonatomic, readonly, strong) NSURL *URL;
 @property (nonatomic, readonly, getter = isPlaying) BOOL playing;
 @property (nonatomic, assign, getter = isLooping) BOOL looping;
+@property (nonatomic, readonly) NSTimeInterval duration;
+@property (nonatomic, assign) NSTimeInterval currentTime;
 @property (nonatomic, copy) SoundCompletionHandler completionHandler;
 @property (nonatomic, assign) float baseVolume;
 @property (nonatomic, assign) float volume;
+@property (nonatomic, assign) float pan;
 
 - (void)fadeTo:(float)volume duration:(NSTimeInterval)duration;
 - (void)fadeIn:(NSTimeInterval)duration;
@@ -136,21 +87,6 @@ typedef void (^SoundCompletionHandler)(BOOL didFinish);
 
 
 @interface SoundManager : NSObject
-
-//required for 32-bit Macs
-#ifdef __i386__
-{
-    @private
-    
-    Sound *currentMusic;
-    NSMutableArray *currentSounds;
-    BOOL allowsBackgroundMusic;
-    float soundVolume;
-    float musicVolume;
-    NSTimeInterval soundFadeDuration;
-    NSTimeInterval musicFadeDuration;
-}
-#endif
 
 @property (nonatomic, readonly, getter = isPlayingMusic) BOOL playingMusic;
 @property (nonatomic, assign) BOOL allowsBackgroundMusic;
