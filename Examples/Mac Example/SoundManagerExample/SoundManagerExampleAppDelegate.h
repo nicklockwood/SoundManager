@@ -9,16 +9,11 @@
 #import <Cocoa/Cocoa.h>
 #import "SoundManager.h"
 
-@interface SoundManagerExampleAppDelegate : NSObject <NSApplicationDelegate> {
-@private
-    NSWindow *__weak window;
-    NSButton *__weak switchTrackButton;
-    NSUInteger trackIndex;
-}
+@interface SoundManagerExampleAppDelegate : NSObject <NSApplicationDelegate>
 
-@property (weak) IBOutlet NSWindow *window;
-@property (weak) IBOutlet NSButton *switchTrackButton;
-@property (assign) NSUInteger trackIndex;
+@property (nonatomic, strong) IBOutlet NSWindow *window;
+@property (nonatomic, strong) IBOutlet NSButton *switchTrackButton;
+@property (nonatomic, assign) NSUInteger trackIndex;
 
 - (IBAction)playPauseMusic:(NSButton *)sender;
 - (IBAction)switchTrack:(NSButton *)sender;

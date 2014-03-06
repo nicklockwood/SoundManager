@@ -1,6 +1,6 @@
 SoundManager
 
-Version 1.4, September 28th, 2013
+Version 1.4.1, March 6th, 2014
 
 Copyright (C) 2011 Charcoal Design
 

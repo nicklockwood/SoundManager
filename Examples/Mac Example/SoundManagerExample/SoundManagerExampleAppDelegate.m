@@ -10,10 +10,6 @@
 
 @implementation SoundManagerExampleAppDelegate
 
-@synthesize window;
-@synthesize switchTrackButton;
-@synthesize trackIndex;
-
 - (void)applicationDidFinishLaunching:(__unused NSNotification *)notification
 {
     [[SoundManager sharedManager] prepareToPlay];
@@ -21,7 +17,7 @@
 
 - (void)playMusic
 {
-    if (trackIndex == 0)
+    if (self.trackIndex == 0)
     {
         [[SoundManager sharedManager] playMusic:@"track1" looping:YES];
     }
@@ -37,20 +33,20 @@
     {
         [[SoundManager sharedManager] stopMusic];
         [sender setTitle:@"Play Music"];
-        [switchTrackButton setEnabled:NO];
+        [self.switchTrackButton setEnabled:NO];
     }
     else
     {
         [self playMusic];
         [sender setTitle:@"Pause Music"];
-        [switchTrackButton setEnabled:YES];
+        [self.switchTrackButton setEnabled:YES];
     }
 }
 
 - (IBAction)switchTrack:(__unused NSButton *)sender
 {
-    trackIndex ++;
-    trackIndex = trackIndex % 2;
+    self.trackIndex ++;
+    self.trackIndex = self.trackIndex % 2;
     [self playMusic];
 }
 

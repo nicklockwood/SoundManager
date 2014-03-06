@@ -1,7 +1,7 @@
 //
 //  SoundManager.m
 //
-//  Version 1.4
+//  Version 1.4.1
 //
 //  Created by Nick Lockwood on 29/01/2011.
 //  Copyright 2010 Charcoal Design
@@ -30,7 +30,14 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 
+
 #import "SoundManager.h"
+
+
+#pragma GCC diagnostic ignored "-Wobjc-missing-property-synthesis"
+#pragma GCC diagnostic ignored "-Wdirect-ivar-access"
+#pragma GCC diagnostic ignored "-Wselector"
+#pragma GCC diagnostic ignored "-Wgnu"
 
 
 #import <Availability.h>
@@ -41,11 +48,12 @@
 
 NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotification";
 
+@interface Sound()
 
 #if SM_USE_AV_AUDIO_PLAYER
-@interface Sound() <AVAudioPlayerDelegate>
+<AVAudioPlayerDelegate>
 #else
-@interface Sound() <NSSoundDelegate>
+<NSSoundDelegate>
 #endif
 
 @property (nonatomic, assign) float startVolume;
@@ -63,7 +71,7 @@ NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotif
 
 @implementation Sound
 
-+ (Sound *)soundNamed:(NSString *)name
++ (instancetype)soundNamed:(NSString *)name
 {
     NSString *path = name;
     if (![path isAbsolutePath])
@@ -77,22 +85,22 @@ NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotif
     return [self soundWithContentsOfFile:path];
 }
 
-+ (Sound *)soundWithContentsOfFile:(NSString *)path
++ (instancetype)soundWithContentsOfFile:(NSString *)path
 {
     return [[self alloc] initWithContentsOfFile:path];
 }
 
-+ (Sound *)soundWithContentsOfURL:(NSURL *)URL
++ (instancetype)soundWithContentsOfURL:(NSURL *)URL
 {
     return [[self alloc] initWithContentsOfURL:URL];
 }
 
-- (Sound *)initWithContentsOfFile:(NSString *)path
+- (instancetype)initWithContentsOfFile:(NSString *)path
 {   
     return [self initWithContentsOfURL:path? [NSURL fileURLWithPath:path]: nil];
 }
 
-- (Sound *)initWithContentsOfURL:(NSURL *)URL
+- (instancetype)initWithContentsOfURL:(NSURL *)URL
 {
     
 #ifdef DEBUG
@@ -153,7 +161,7 @@ NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotif
 {
     baseVolume = fminf(1.0f, fmaxf(0.0f, baseVolume));
     
-    if (_baseVolume != baseVolume)
+    if (ABS(_baseVolume - baseVolume) < 0.001f)
     {
         float previousVolume = self.volume;
         _baseVolume = baseVolume;
@@ -277,14 +285,14 @@ NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotif
         [[NSNotificationCenter defaultCenter] postNotificationName:SoundDidFinishPlayingNotification object:self];
         
         //set to nil on next runloop update so sound is not released unexpectedly
-        [self performSelector:@selector(setSelfReference:) withObject:nil afterDelay:0.0];
+        [self performSelectorOnMainThread:@selector(setSelfReference:) withObject:nil waitUntilDone:NO];
     }
 }
 
 #if SM_USE_AV_AUDIO_PLAYER
-- (void)audioPlayerDidFinishPlaying:(__unused AVAudioPlayer *)player successfully:(__unused BOOL)finishedPlaying
+- (void)audioPlayerDidFinishPlaying:(__unused AVAudioPlayer *)player successfully:(BOOL)finishedPlaying
 #else
-- (void)sound:(__unused NSSound *)sound didFinishPlaying:(__unused BOOL)finishedPlaying
+- (void)sound:(__unused NSSound *)sound didFinishPlaying:(BOOL)finishedPlaying
 #endif
 {
     //stop timer
@@ -292,11 +300,11 @@ NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotif
     self.timer = nil;
     
     //fire events
-    if (_completionHandler) _completionHandler(NO);
+    if (_completionHandler) _completionHandler(finishedPlaying);
     [[NSNotificationCenter defaultCenter] postNotificationName:SoundDidFinishPlayingNotification object:self];
     
     //set to nil on next runloop update so sound is not released unexpectedly
-    [self performSelector:@selector(setSelfReference:) withObject:nil afterDelay:0.0];
+    [self performSelectorOnMainThread:@selector(setSelfReference:) withObject:nil waitUntilDone:NO];
 }
 
 - (void)fadeTo:(float)volume duration:(NSTimeInterval)duration
@@ -329,7 +337,7 @@ NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotif
 - (void)tick
 {
     NSTimeInterval now = [[NSDate date] timeIntervalSinceReferenceDate];
-    float delta = (now - _fadeStart)/_fadeTime * (_targetVolume - _startVolume);
+    float delta = (float)((now - _fadeStart)/_fadeTime * (_targetVolume - _startVolume));
     [_sound setVolume:(_startVolume + delta) * _baseVolume];
     if ((delta > 0.0f && [_sound volume] >= _targetVolume) ||
         (delta < 0.0f && [_sound volume] <= _targetVolume))
@@ -362,7 +370,7 @@ NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotif
 
 @implementation SoundManager
 
-+ (SoundManager *)sharedManager
++ (instancetype)sharedManager
 {
     static SoundManager *sharedManager = nil;
     if (sharedManager == nil)
@@ -372,7 +380,7 @@ NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotif
     return sharedManager;
 }
 
-- (SoundManager *)init
+- (instancetype)init
 {
     if ((self = [super init]))
     {

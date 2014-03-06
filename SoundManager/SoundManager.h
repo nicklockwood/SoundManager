@@ -1,7 +1,7 @@
 //
 //  SoundManager.h
 //
-//  Version 1.4
+//  Version 1.4.1
 //
 //  Created by Nick Lockwood on 29/01/2011.
 //  Copyright 2010 Charcoal Design
@@ -44,6 +44,10 @@ __MAC_OS_X_VERSION_MIN_REQUIRED > __MAC_10_6
 #endif
 
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wobjc-missing-property-synthesis"
+
+
 #if SM_USE_AV_AUDIO_PLAYER
 #import <AVFoundation/AVFoundation.h>
 #define SM_SOUND AVAudioPlayer
@@ -60,14 +64,14 @@ typedef void (^SoundCompletionHandler)(BOOL didFinish);
 
 @interface Sound : NSObject
 
-+ (Sound *)soundNamed:(NSString *)name;
-+ (Sound *)soundWithContentsOfFile:(NSString *)path;
-- (Sound *)initWithContentsOfFile:(NSString *)path;
-+ (Sound *)soundWithContentsOfURL:(NSURL *)URL;
-- (Sound *)initWithContentsOfURL:(NSURL *)URL;
++ (instancetype)soundNamed:(NSString *)name;
++ (instancetype)soundWithContentsOfFile:(NSString *)path;
+- (instancetype)initWithContentsOfFile:(NSString *)path;
++ (instancetype)soundWithContentsOfURL:(NSURL *)URL;
+- (instancetype)initWithContentsOfURL:(NSURL *)URL;
 
 @property (nonatomic, readonly, copy) NSString *name;
-@property (nonatomic, readonly, strong) NSURL *URL;
+@property (nonatomic, readonly) NSURL *URL;
 @property (nonatomic, readonly, getter = isPlaying) BOOL playing;
 @property (nonatomic, assign, getter = isLooping) BOOL looping;
 @property (nonatomic, readonly) NSTimeInterval duration;
@@ -95,7 +99,7 @@ typedef void (^SoundCompletionHandler)(BOOL didFinish);
 @property (nonatomic, assign) NSTimeInterval soundFadeDuration;
 @property (nonatomic, assign) NSTimeInterval musicFadeDuration;
 
-+ (SoundManager *)sharedManager;
++ (instancetype)sharedManager;
 
 - (void)prepareToPlayWithSound:(id)soundOrName;
 - (void)prepareToPlay;
@@ -117,3 +121,6 @@ typedef void (^SoundCompletionHandler)(BOOL didFinish);
 - (void)stopAllSounds;
 
 @end
+
+
+#pragma GCC diagnostic pop

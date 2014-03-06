@@ -10,12 +10,9 @@
 
 @class SoundManagerExampleViewController;
 
-@interface SoundManagerExampleAppDelegate : NSObject <UIApplicationDelegate> {
-
-}
+@interface SoundManagerExampleAppDelegate : NSObject <UIApplicationDelegate>
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
-
 @property (nonatomic, retain) IBOutlet SoundManagerExampleViewController *viewController;
 
 @end

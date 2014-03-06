@@ -10,9 +10,6 @@
 
 @implementation SoundManagerExampleViewController
 
-@synthesize switchTrackButton;
-@synthesize trackIndex;
-
 - (void)viewDidLoad
 {
     [SoundManager sharedManager].allowsBackgroundMusic = YES;
@@ -21,7 +18,7 @@
 
 - (void)playMusic
 {
-    if (trackIndex == 0)
+    if (self.trackIndex == 0)
     {
         [[SoundManager sharedManager] playMusic:@"track1" looping:YES];
     }
@@ -37,22 +34,22 @@
     {
         [[SoundManager sharedManager] stopMusic];
         [sender setTitle:@"Play Music" forState:UIControlStateNormal];
-        switchTrackButton.enabled = NO;
-        switchTrackButton.alpha = 0.5;
+        self.switchTrackButton.enabled = NO;
+        self.switchTrackButton.alpha = 0.5;
     }
     else
     {
         [self playMusic];
         [sender setTitle:@"Pause Music" forState:UIControlStateNormal];
-        switchTrackButton.enabled = YES;
-        switchTrackButton.alpha = 1.0;
+        self.switchTrackButton.enabled = YES;
+        self.switchTrackButton.alpha = 1.0;
     }
 }
 
 - (IBAction)switchTrack:(__unused UIButton *)sender
 {
-    trackIndex ++;
-    trackIndex = trackIndex % 2;
+    self.trackIndex ++;
+    self.trackIndex %= 2;
     [self playMusic];
 }
 
