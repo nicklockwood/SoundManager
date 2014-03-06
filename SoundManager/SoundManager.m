@@ -144,7 +144,7 @@ NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotif
     
 #else
     
-    [sound setVolume:0.0f];
+    [_sound setVolume:0.0f];
     [self play];
     [self performSelector:@selector(stop) withObject:nil afterDelay:0.0];
     
@@ -195,25 +195,31 @@ NSString *const SoundDidFinishPlayingNotification = @"SoundDidFinishPlayingNotif
     }
 }
 
+#if SM_USE_AV_AUDIO_PLAYER
+
 - (float)pan
 {
-
-#if SM_USE_AV_AUDIO_PLAYER
     return [_sound pan];
-#else
-    return 0.0f;
-#endif
-    
 }
 
 - (void)setPan:(float)pan
 {
-    
-#if SM_USE_AV_AUDIO_PLAYER
     [_sound setPan:pan];
-#endif
-    
 }
+
+#else
+
+- (float)pan
+{
+    return 0.0f;
+}
+
+- (void)setPan:(__unused float)pan
+{
+    //does nothing
+}
+
+#endif
 
 - (NSTimeInterval)duration
 {

@@ -31,6 +31,10 @@
 //
 
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wobjc-missing-property-synthesis"
+
+
 #import <Availability.h>
 #if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
@@ -38,15 +42,10 @@
 #else
 #import <Cocoa/Cocoa.h>
 #if !defined(SM_USE_AV_AUDIO_PLAYER) && \
-__MAC_OS_X_VERSION_MIN_REQUIRED > __MAC_10_6
+__MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_7
 #define SM_USE_AV_AUDIO_PLAYER 1
 #endif
 #endif
-
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wobjc-missing-property-synthesis"
-
 
 #if SM_USE_AV_AUDIO_PLAYER
 #import <AVFoundation/AVFoundation.h>
