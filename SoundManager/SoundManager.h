@@ -1,7 +1,7 @@
 //
 //  SoundManager.h
 //
-//  Version 1.4.1
+//  Version 1.4.2
 //
 //  Created by Nick Lockwood on 29/01/2011.
 //  Copyright 2010 Charcoal Design
@@ -36,6 +36,7 @@
 
 
 #import <Availability.h>
+#import <TargetConditionals.h>
 #if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
 #define SM_USE_AV_AUDIO_PLAYER 1

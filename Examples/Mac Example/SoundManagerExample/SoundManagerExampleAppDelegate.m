@@ -62,12 +62,12 @@
 
 - (IBAction)setSoundVolume:(NSSlider *)sender
 {
-    [SoundManager sharedManager].soundVolume = [sender floatValue]/100.0;
+    [SoundManager sharedManager].soundVolume = [sender floatValue]/100.0f;
 }
 
 - (IBAction)setMusicVolume:(NSSlider *)sender
 {
-    [SoundManager sharedManager].musicVolume = [sender floatValue]/100.0;
+    [SoundManager sharedManager].musicVolume = [sender floatValue]/100.0f;
 }
 
 @end
